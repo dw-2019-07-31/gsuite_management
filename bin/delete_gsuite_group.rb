@@ -11,7 +11,7 @@ require 'logger'
 require '/script/lib/SendMail.rb'
 
 log = Logger.new('/script/log/script.log')
-log.progname = "create_internal_group"
+log.progname = "delete_group"
 
 mail = ErrorMail.new
 

@@ -33,6 +33,16 @@ class Group < Excel
     }
     members.sort
   end
+
+  def get_meeting_structure(meeting_structure_name)
+    members = Array.new
+    @data.each{|row|
+      next if row[meeting_structure_name].nil?
+      next unless row['兼務情報'].nil?
+      members << row['メールアドレス']
+    }
+    members.sort
+  end
   
   def get_all
     members = Array.new
