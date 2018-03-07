@@ -33,6 +33,11 @@ class Group < Excel
     }
     members.sort
   end
+  
+  def get_meeting_header_name(group)
+    group.sub!(/^DW_/, '')
+    group.concat("メンバー")
+  end
 
   def get_meeting_structure(meeting_structure_name)
     members = Array.new
