@@ -44,6 +44,7 @@ groups.each{|group|
     excel_members = excel.get_all
   elsif conference.include?("#{group['email']}") == true
     meeting_structure_name = excel.get_meeting_header_name("#{group['name']}")
+    puts meeting_structure_name
     excel_members = excel.get_meeting_structure("#{meeting_structure_name}")
   else
     excel_members = excel.get_members_recurse("#{group['email'].sub(/@dadway.com/, "").upcase}") 

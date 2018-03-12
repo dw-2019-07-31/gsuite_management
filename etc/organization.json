@@ -1,6 +1,5 @@
 [
-  {"email":"executive@dadway.com","name":"幹部会議","description":"Executive Conference"},
-  {"email":"determination@dadway.com","name":"決定報告会議","description":"Determination Report Conference"},
+  {"email":"executive@dadway.com","name":"幹部","description":"Executive Conference"},
   {"email":"mirai@dadway.com","name":"みらい会議","description":"Mirai Conference"},
   {"email":"business_managers@dadway.com","name":"事業責任者会議","description":"Business Managers Conference"},
   {"email":"contact@dadway.com","name":"連絡会議","description":"Contact Conference"}
