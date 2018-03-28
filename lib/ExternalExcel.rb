@@ -10,6 +10,7 @@ class ExternalExcel
     header = nil
     @data = Array.new
     @sheet.each{|row|
+      row[2].gsub!(" ","")
       next if (not header.nil?) && row[0] =~ /^#/
 
       if header.nil?
@@ -26,6 +27,7 @@ class ExternalExcel
 
     header = nil
     @sheet.each{|row|
+      row[2].gsub!(" ","")
       next if (not header.nil?) && row[0] =~ /^#/
 
       if header.nil?

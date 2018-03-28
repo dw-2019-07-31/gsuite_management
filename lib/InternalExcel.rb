@@ -12,6 +12,7 @@ class InternalExcel
     header = nil
     @data = Array.new
     @sheet.each{|row|
+      row[2].gsub!(" ","")
       next if (not header.nil?) && row[0] =~ /^#/
 
       if header.nil?

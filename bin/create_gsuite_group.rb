@@ -88,10 +88,10 @@ excel_organizations.each{|organization|
     end
 
     group_setting = patch_service.get_group("#{organization}#{DOMAIN}")
-    next if group_setting.who_can_post_message == 'ALL_IN_DOMAIN_CAN_POST' && group_setting.show_in_group_directory == true
+    next if group_setting.who_can_post_message == 'ANYONE_CAN_POST' && group_setting.show_in_group_directory == true
     begin
       setting = Google::Apis::GroupssettingsV1::Groups.new(
-        who_can_post_message: 'ALL_IN_DOMAIN_CAN_POST',
+        who_can_post_message: 'ANYONE_CAN_POST',
         show_in_group_directory: 'true'
       )
       patch_service.patch_group("#{organization}#{DOMAIN}", setting)

@@ -9,6 +9,7 @@ class Employee < Excel
     @data.each{|row|
       next if row['メールアドレス'].nil?
       next unless row['兼務情報'].nil?
+      row['メールアドレス'].gsub!(" ", "")
       (row['姓'] = row['名'] ; row['名'] = nil) if row['姓'].nil?
       row['名'] = 'メール' if row['名'].nil?
       @employees << row
