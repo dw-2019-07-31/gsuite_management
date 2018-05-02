@@ -23,11 +23,20 @@ service.authorization = gsuite.authorize
 
 excel = ExternalGroup.new
 
-groups = Array.new
-list = service.list_groups(customer: 'my_customer')
-list.groups.each{|group| groups << group.email if group.description == 'External Office'}
+#groups = Array.new
+#list = service.list_groups(customer: 'my_customer')
+#list.groups.each{|group| groups << group.email if group.description == 'External Office'}
 
-groups.each{|group|
+gsuite_groups = Array.new
+pagetoken = ""
+loop do
+  list = service.list_groups(customer: 'my_customer', page_token: "#{pagetoken}")
+  list.groups.each{|group| gsuite_groups << group.email if group.description == 'External Office'}
+  pagetoken = list.next_page_token
+  break if pagetoken.nil?
+end
+
+gsuite_groups.each{|group|
   excel_members = Array.new
   gsuite_members = Array.new
 
@@ -35,6 +44,14 @@ groups.each{|group|
 
   list = service.list_members("#{group}")
   list.members.each{|member| gsuite_members << member.email} unless list.members.nil?
+
+  pagetoken = ""
+  loop do
+    list = service.list_members("#{group}", page_token: "#{pagetoken}")
+    list.members.each{|member| gsuite_members << member.email} unless list.members.nil?
+    pagetoken = list.next_page_token
+    break if pagetoken.nil?
+  end
 
   delete_members = gsuite_members - excel_members
 

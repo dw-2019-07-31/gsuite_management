@@ -23,13 +23,22 @@ service.client_options.application_name = APPLICATION_NAME
 service.authorization = gsuite.authorize
 
 excel = Group.new
-groups = Array.new
+#groups = Array.new
 
-group_list = service.list_groups(customer: 'my_customer')
+#group_list = service.list_groups(customer: 'my_customer')
 
-group_list.groups.each{|group| groups << group.email}
+#group_list.groups.each{|group| groups << group.email}
 
-groups.each{|group|
+gsuite_groups = Array.new
+pagetoken = ""
+loop do
+  list = service.list_groups(customer: 'my_customer', page_token: "#{pagetoken}")
+  list.groups.each{|group| gsuite_groups << group.email}
+  pagetoken = list.next_page_token
+  break if pagetoken.nil?
+end
+
+gsuite_groups.each{|group|
   members = Array.new
   list = service.list_members("#{group}")
   list.members.each{|member| members << member.email} unless list.members.nil?

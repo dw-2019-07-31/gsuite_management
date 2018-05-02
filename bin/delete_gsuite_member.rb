@@ -32,9 +32,18 @@ end
 excel = Group.new
 groups = Array.new
 
-groups = Array.new
-list = service.list_groups(customer: 'my_customer')
-list.groups.each{|group| groups << {'email' => group.email, 'name' => group.name} if group.name =~ /^DW_/}
+#groups = Array.new
+#list = service.list_groups(customer: 'my_customer')
+#list.groups.each{|group| groups << {'email' => group.email, 'name' => group.name} if group.name =~ /^DW_/}
+
+gsuite_organizations = Array.new
+pagetoken = ""
+loop do
+  list = service.list_groups(customer: 'my_customer', page_token: "#{pagetoken}")
+  list.groups.each{|group| groups << {'email' => group.email, 'name' => group.name} if group.name =~ /^DW_/}
+  pagetoken = list.next_page_token
+  break if pagetoken.nil?
+end
 
 groups.each{|group|
   excel_members = Array.new
@@ -50,8 +59,16 @@ groups.each{|group|
     excel_members = excel.get_members_recurse("#{group['email'].sub(/@dadway.com/, "").upcase}") 
   end
 
-  list = service.list_members("#{group['email']}")
-  list.members.each{|member| gsuite_members << member.email} unless list.members.nil?
+  #list = service.list_members("#{group['email']}")
+  #list.members.each{|member| gsuite_members << member.email} unless list.members.nil?
+
+  pagetoken = ""
+  loop do
+    list = service.list_members("#{group['email']}", page_token: "#{pagetoken}")
+    list.members.each{|member| gsuite_members << member.email} unless list.members.nil?
+    pagetoken = list.next_page_token
+    break if pagetoken.nil?
+  end
 
   excel_members == nil ? delete_members = gsuite_members : delete_members = gsuite_members - excel_members
 

@@ -27,11 +27,20 @@ patch_service.client_options.application_name = APPLICATION_NAME
 patch_service.authorization = gsuite.setting_authorize
 
 #グループ情報再取得
-organization_response = service.list_groups(customer: 'my_customer')
+#list = service.list_groups(customer: 'my_customer')
+
+gsuite_groups = Array.new
+pagetoken = ""
+loop do
+  list = service.list_groups(customer: 'my_customer', page_token: "#{pagetoken}")
+  list.groups.each{|group| gsuite_groups << group.name}
+  pagetoken = list.next_page_token
+  break if pagetoken.nil?
+end
 
 #Gsuiteのグループ名を取得
-gsuite_groups = Array.new
-organization_response.groups.each{|group| gsuite_groups << group.name }
+#gsuite_groups = Array.new
+#list.groups.each{|group| gsuite_groups << group.name }
 
 excel = ExternalGroup.new
 

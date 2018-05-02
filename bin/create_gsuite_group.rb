@@ -31,11 +31,20 @@ File.open("/script/etc/organization.json") do |file|
   conferences = JSON.load(file)
 end
 
-organization_response = service.list_groups(customer: 'my_customer')
+#organization_response = service.list_groups(customer: 'my_customer')
+
+#gsuite_organizations = Array.new
+
+#organization_response.groups.each{|group| gsuite_organizations << group.namete_groups = Array.new
 
 gsuite_organizations = Array.new
-
-organization_response.groups.each{|group| gsuite_organizations << group.name}
+pagetoken = ""
+loop do
+  list = service.list_groups(customer: 'my_customer', page_token: "#{pagetoken}")
+  list.groups.each{|group| gsuite_organizations << group.name}
+  pagetoken = list.next_page_token
+  break if pagetoken.nil?
+end
 
 #会議体グループ作成
 conferences.each{|conference| 

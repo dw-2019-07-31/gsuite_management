@@ -23,23 +23,41 @@ service.authorization = gsuite.authorize
 
 #ユーザー情報取得
 #ユーザー数が500超えると見直し必要
-user_response = service.list_users(customer: 'my_customer', max_results: 500)
+#user_response = service.list_users(customer: 'my_customer', max_results: 500)
 
 #ユーザー用の配列定義
-gsuite_user = Array.new
-data = Array.new
+#gsuite_user = Array.new
+#data = Array.new
 
 #ユーザーアドレスの取得
-user_response.users.each{|user|
+#user_response.users.each{|user|
+#  if user.phones.nil?
+#    hash = { 'mail' => user.primary_email, 'phone'=> ""}
+#  else
+#    user.phones.each{|phone|
+#    hash = { 'mail' => user.primary_email, 'phone'=> phone['value']}
+#    }
+#  end
+#gsuite_user << hash
+#}
+
+gsuite_user = Array.new
+pagetoken = ""
+loop do
+  list = service.list_users(customer: 'my_customer', max_results: 500,  page_token: "#{pagetoken}")
+  list.users.each{|user| 
   if user.phones.nil?
-    hash = { 'mail' => user.primary_email, 'phone'=> ""}
-  else
-    user.phones.each{|phone|
-    hash = { 'mail' => user.primary_email, 'phone'=> phone['value']}
-    }
-  end
-gsuite_user << hash
-}
+      hash = { 'mail' => user.primary_email, 'phone'=> ""}
+    else
+      user.phones.each{|phone|
+      hash = { 'mail' => user.primary_email, 'phone'=> phone['value']}
+      }
+    end
+  gsuite_user << hash
+  }
+  pagetoken = list.next_page_token
+  break if pagetoken.nil?
+end
 
 #p employees = Employee.new
 excel = Employee.new

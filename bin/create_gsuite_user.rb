@@ -23,13 +23,22 @@ service.authorization = gsuite.authorize
 
 #ユーザー情報取得
 #ユーザー数が500超えると見直し必要
-user_response = service.list_users(customer: 'my_customer', max_results: 500)
+#user_response = service.list_users(customer: 'my_customer', max_results: 500)
 
 #ユーザー用の配列定義
-gsuite_user_email = Array.new
+#gsuite_user_email = Array.new
 
 #ユーザーアドレスの取得
-user_response.users.each{|user| gsuite_user_email << user.primary_email}
+#user_response.users.each{|user| gsuite_user_email << user.primary_email}
+
+gsuite_user_email = Array.new
+pagetoken = ""
+loop do
+  list = service.list_users(customer: 'my_customer', max_results: 500,  page_token: "#{pagetoken}")
+  list.users.each{|user| gsuite_user_email << user.primary_email}
+  pagetoken = list.next_page_token
+  break if pagetoken.nil?
+end
 
 #p employees = Employee.new
 excel = Employee.new

@@ -33,8 +33,16 @@ end
 excel = Group.new
 groups = Array.new
 
-list = service.list_groups(customer: 'my_customer')
-list.groups.each{|group| groups << {'email' => group.email, 'name' => group.name} if group.name =~ /^DW_/}
+#list = service.list_groups(customer: 'my_customer')
+#list.groups.each{|group| groups << {'email' => group.email, 'name' => group.name} if group.name =~ /^DW_/}
+
+pagetoken = ""
+loop do
+  list = service.list_groups(customer: 'my_customer', page_token: "#{pagetoken}")
+  list.groups.each{|group| groups << {'email' => group.email, 'name' => group.name} if group.name =~ /^DW_/}
+  pagetoken = list.next_page_token
+  break if pagetoken.nil?
+end
 
 groups.each{|group|
   excel_members = Array.new
@@ -51,8 +59,14 @@ groups.each{|group|
 
   next if excel_members.nil?
 
-  list = service.list_members("#{group['email']}")
-  list.members.each{|member| gsuite_members << member.email} unless list.members.nil?
+  pagetoken = ""
+  loop do
+    list = service.list_members("#{group['email']}", page_token: "#{pagetoken}")
+    list.members.each{|member| gsuite_members << member.email} unless list.members.nil?
+    pagetoken = list.next_page_token
+    break if pagetoken.nil?
+  end
+
   add_members = excel_members - gsuite_members
   
   add_members.each{|member|
