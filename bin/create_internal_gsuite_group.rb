@@ -27,13 +27,6 @@ patch_service = Google::Apis::GroupssettingsV1::GroupssettingsService.new
 patch_service.client_options.application_name = APPLICATION_NAME
 patch_service.authorization = gsuite.setting_authorize
 
-#グループ情報再取得
-#organization_response = service.list_groups(customer: 'my_customer')
-
-#Gsuiteのグループ名を取得
-#gsuite_groups = Array.new
-#organization_response.groups.each{|group| gsuite_groups << group.email }
-
 gsuite_groups = Array.new
 pagetoken = ""
 loop do

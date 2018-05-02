@@ -33,9 +33,6 @@ end
 excel = Group.new
 groups = Array.new
 
-#list = service.list_groups(customer: 'my_customer')
-#list.groups.each{|group| groups << {'email' => group.email, 'name' => group.name} if group.name =~ /^DW_/}
-
 pagetoken = ""
 loop do
   list = service.list_groups(customer: 'my_customer', page_token: "#{pagetoken}")

@@ -32,10 +32,6 @@ end
 excel = Group.new
 groups = Array.new
 
-#groups = Array.new
-#list = service.list_groups(customer: 'my_customer')
-#list.groups.each{|group| groups << {'email' => group.email, 'name' => group.name} if group.name =~ /^DW_/}
-
 gsuite_organizations = Array.new
 pagetoken = ""
 loop do
@@ -58,9 +54,6 @@ groups.each{|group|
   else
     excel_members = excel.get_members_recurse("#{group['email'].sub(/@dadway.com/, "").upcase}") 
   end
-
-  #list = service.list_members("#{group['email']}")
-  #list.members.each{|member| gsuite_members << member.email} unless list.members.nil?
 
   pagetoken = ""
   loop do

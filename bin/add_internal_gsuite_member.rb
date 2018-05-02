@@ -28,7 +28,6 @@ service.authorization = gsuite.authorize
 excel = InternalGroup.new
 user = User.new
 groups = excel.get_group_list
-p groups
 
 groups.each{|group|
   excel_members = Array.new

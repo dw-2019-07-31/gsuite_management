@@ -42,8 +42,6 @@ groups.each{|group|
     break if pagetoken.nil?
   end
 
-  #list = service.list_members("#{group['英語名称']}")
-  #list.members.each{|member| gsuite_members << member.email} unless list.members.nil?
   add_members = excel_members - gsuite_members
   
   add_members.each{|member|

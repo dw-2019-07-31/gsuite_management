@@ -22,13 +22,6 @@ service = Google::Apis::AdminDirectoryV1::DirectoryService.new()
 service.client_options.application_name = APPLICATION_NAME
 service.authorization = gsuite.authorize
 
-excel = Group.new
-#groups = Array.new
-
-#group_list = service.list_groups(customer: 'my_customer')
-
-#group_list.groups.each{|group| groups << group.email}
-
 gsuite_groups = Array.new
 pagetoken = ""
 loop do

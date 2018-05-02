@@ -23,10 +23,6 @@ service.authorization = gsuite.authorize
 
 excel = ExternalGroup.new
 
-#groups = Array.new
-#list = service.list_groups(customer: 'my_customer')
-#list.groups.each{|group| groups << group.email if group.description == 'External Office'}
-
 gsuite_groups = Array.new
 pagetoken = ""
 loop do

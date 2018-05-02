@@ -26,9 +26,6 @@ patch_service = Google::Apis::GroupssettingsV1::GroupssettingsService.new
 patch_service.client_options.application_name = APPLICATION_NAME
 patch_service.authorization = gsuite.setting_authorize
 
-#グループ情報再取得
-#list = service.list_groups(customer: 'my_customer')
-
 gsuite_groups = Array.new
 pagetoken = ""
 loop do
@@ -37,10 +34,6 @@ loop do
   pagetoken = list.next_page_token
   break if pagetoken.nil?
 end
-
-#Gsuiteのグループ名を取得
-#gsuite_groups = Array.new
-#list.groups.each{|group| gsuite_groups << group.name }
 
 excel = ExternalGroup.new
 

@@ -23,10 +23,6 @@ service.authorization = gsuite.authorize
 
 excel = InternalGroup.new
 
-#groups = Array.new
-#list = service.list_groups(customer: 'my_customer')
-#list.groups.each{|group| groups << group.email unless group.name =~ /^DW_/ || group.description == 'External Office'}
-
 groups = Array.new
 pagetoken = ""
 loop do
@@ -41,9 +37,6 @@ groups.each{|group|
   gsuite_members = Array.new
 
   excel_members = excel.get_members("#{group}")
-
-  #list = service.list_members("#{group}")
-  #list.members.each{|member| gsuite_members << member.email} unless list.members.nil?
 
   pagetoken = ""
   loop do

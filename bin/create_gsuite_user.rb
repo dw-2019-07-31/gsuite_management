@@ -21,16 +21,6 @@ service = Google::Apis::AdminDirectoryV1::DirectoryService.new()
 service.client_options.application_name = APPLICATION_NAME
 service.authorization = gsuite.authorize
 
-#ユーザー情報取得
-#ユーザー数が500超えると見直し必要
-#user_response = service.list_users(customer: 'my_customer', max_results: 500)
-
-#ユーザー用の配列定義
-#gsuite_user_email = Array.new
-
-#ユーザーアドレスの取得
-#user_response.users.each{|user| gsuite_user_email << user.primary_email}
-
 gsuite_user_email = Array.new
 pagetoken = ""
 loop do
@@ -40,7 +30,6 @@ loop do
   break if pagetoken.nil?
 end
 
-#p employees = Employee.new
 excel = Employee.new
 employees = excel.get
 
