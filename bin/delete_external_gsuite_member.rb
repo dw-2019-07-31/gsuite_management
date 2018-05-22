@@ -38,8 +38,10 @@ gsuite_groups.each{|group|
 
   excel_members = excel.get_members("#{group}")
 
-  list = service.list_members("#{group}")
-  list.members.each{|member| gsuite_members << member.email} unless list.members.nil?
+  #グループメンバーの取得処理消し忘れ
+  #1か月様子見
+  #list = service.list_members("#{group}")
+  #list.members.each{|member| gsuite_members << member.email} unless list.members.nil?
 
   pagetoken = ""
   loop do
