@@ -1,11 +1,14 @@
 require 'roo'
-require '/script/lib/Constant.rb'
+require './lib/Constant.rb'
+require 'singleton'
 
 class Excel
 
-  def initialize
+  include Singleton
 
-    book = Roo::Spreadsheet.open(EMPLOYEE_FILE_NAME)
+  def initialize(file_name)
+
+    book = Roo::Spreadsheet.open(file_name)
     @sheet = book.sheet('Sheet1')
 
     header = nil

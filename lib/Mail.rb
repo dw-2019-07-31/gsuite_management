@@ -9,7 +9,7 @@ class SendMail
        from     'gsuite@dadway.com'
        to       's_urano@dadway.com'
        subject  "【GSuite】エラー通知"
-       body     "#{text.encode("Shift_JIS")}"
+       body     "#{text}"
     end
    
     mail.delivery_method :smtp, { 
