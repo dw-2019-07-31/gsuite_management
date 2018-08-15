@@ -3,7 +3,6 @@
 #require 'fileutils'
 require 'singleton'
 require './lib/Constant.rb'
-require './lib/Auth.rb'
 
 class Gsuite
 
@@ -18,7 +17,7 @@ class Gsuite
   def groups_settings_auth
     @groups_settings_auth = Google::Apis::GroupssettingsV1::GroupssettingsService.new
     @groups_settings_auth.client_options.application_name = APPLICATION_NAME
-    @groups_settings_auth.authorization = self.setting_authorize
+    @groups_settings_auth.authorization = self.authorize
   end
 
   #認証

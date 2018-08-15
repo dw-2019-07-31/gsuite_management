@@ -1,7 +1,9 @@
-require '/script/lib/Gsuite.rb'
-require '/script/lib/Auth.rb'
+require './lib/Gsuite.rb'
+require './lib/Constant.rb'
+require './lib/Log.rb'
+require './lib/Mail.rb'
 
-class Group < Gsuite
+class Ggroup < Gsuite
 
   def initialize
     self.directory_auth
@@ -29,19 +31,19 @@ class Group < Gsuite
     gsuite_groups = self.get_groups
 
     excel_groups.each{|excel_group| 
-      next unless gsuite_groups.include?("#{HEAD}" + "#{excel_group['mail']}")
+      next if gsuite_groups.include?("#{excel_group['mail']}")
 
       begin
         group = Google::Apis::AdminDirectoryV1::Group.new(
           email: "#{excel_group["mail"]}",
-          name: "#{HEAD}#{excel_group["name"]}",
+          name: "#{excel_group["name"]}",
           description: "#{excel_group["description"]}"
         )
-        @directory_auth.insert_group(group)
+        #@directory_auth.insert_group(group)
       rescue => exception
-        Log.error("グループの作成でエラーが発生しました。#{excel_group['name']}:#{excel_group['mail']}")
+        Log.error("グループの作成でエラーが発生しました。\nグループ名:#{excel_group['name']}/グループアドレス:#{excel_group['mail']}")
         Log.error("#{exception}")
-        SendMail.error("グループの作成でエラーが発生しました。#{excel_group['name']}:#{excel_group['mail']}\n#{exception}")
+        SendMail.error("グループの作成でエラーが発生しました。\nグループ名:#{excel_group['name']}\nグループアドレス:#{excel_group['mail']}\n#{exception}")
       else
         Log.info("グループを作成しました。#{excel_group['name']}:#{excel_group['mail']}")
       end

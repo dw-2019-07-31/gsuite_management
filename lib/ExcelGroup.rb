@@ -81,7 +81,7 @@ class Egroup < Excel
     @data.each{|row|
       next if row['メールアドレス'].nil?
       #@child_groups << row['グループ名(英名略称)'] unless row['グループ名(英名略称)'].nil?
-      @child_groups << { 'email' => "#{row['グループ名(英名略称)']}#{DOMAIN}", 'name' =>  "#{HEAD}#{row['グループ名(英名略称)']}", 'description' => "#{ORGANIZATION_DESCRIPTION}"} unless row['グループ名(英名略称)'].nil?
+      @child_groups << { 'mail' => "#{row['グループ名(英名略称)'].downcase}#{DOMAIN}", 'name' =>  "#{HEAD}#{row['グループ名(英名略称)']}", 'description' => "#{ORGANIZATION_DESCRIPTION}"} unless row['グループ名(英名略称)'].nil?
     }
     @child_groups.uniq!
     @child_groups.compact!
@@ -95,7 +95,7 @@ class Egroup < Excel
     @parent_groups = Array.new
     @data.each{|row|
       next if row['メールアドレス'].nil?
-      @parent_groups << { 'email' => "#{row['親組織']}#{DOMAIN}", 'name' =>  "#{HEAD}#{row['親組織']}", 'description' => "#{ORGANIZATION_DESCRIPTION}"} unless row['親組織'].nil?
+      @parent_groups << { 'mail' => "#{row['親組織'].downcase}#{DOMAIN}", 'name' =>  "#{HEAD}#{row['親組織']}", 'description' => "#{ORGANIZATION_DESCRIPTION}"} unless row['親組織'].nil?
     }
     @parent_groups.uniq!
     @parent_groups.compact!
