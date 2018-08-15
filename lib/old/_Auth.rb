@@ -1,23 +1,21 @@
-require 'googleauth'
-require 'googleauth/stores/file_token_store'
-require 'fileutils'
-require '/script/lib/Constant.rb'
-require '/script/lib/Auth.rb'
-
-class Gsuite
+class Auth
 
   class << self
-  
+
+    #DirectoryServiceの認証
     def directory_auth
-      @directory_auth = Google::Apis::AdminDirectoryV1::DirectoryService.new()
-      @directory_auth.client_options.application_name = APPLICATION_NAME
-      @directory_auth.authorization = self.authorize
+      service = Google::Apis::AdminDirectoryV1::DirectoryService.new()
+      service.client_options.application_name = APPLICATION_NAME
+      service.authorization = self.authorize
+      service
     end
 
+    #GroupsSettingsの認証
     def groups_settings_auth
-      @groups_settings_auth = Google::Apis::GroupssettingsV1::GroupssettingsService.new
-      @groups_settings_auth.client_options.application_name = APPLICATION_NAME
-      @groups_settings_auth.authorization = self.setting_authorize
+      service = Google::Apis::GroupssettingsV1::GroupssettingsService.new()
+      service.client_options.application_name = APPLICATION_NAME
+      service.authorization = self.authorize
+      service
     end
 
     #認証
