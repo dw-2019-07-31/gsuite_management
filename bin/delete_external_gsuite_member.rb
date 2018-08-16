@@ -11,6 +11,7 @@ require '/script/lib/SendMail.rb'
 
 log = Logger.new('/script/log/script.log')
 log.progname = "delete_external_member"
+log.progname = "delete_external_member"
 
 mail = ErrorMail.new
 

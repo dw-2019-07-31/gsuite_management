@@ -30,7 +30,7 @@ class Internal < Excel
     @data.each{|row|
       check = nil
       groups.each{|group| (check = 1 ; break) if group['英語名称'] == row['英語名称']}
-      groups << row if check == nil
+      groups << {'mail' => row['英語名称'], 'name' => row['連絡先グループ名'], 'description' => "#{INTERNAL_DESCRIPTION}"} if check == nil
     }
     groups
   end

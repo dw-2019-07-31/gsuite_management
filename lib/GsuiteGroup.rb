@@ -58,23 +58,23 @@ class Ggroup < Gsuite
 
   end
 
-  def create_groups(excel_groups)
+  def create_groups(excel_groups, **arg)
 
     gsuite_groups = self.get_groups
 
     excel_groups.each{|excel_group| 
-      next unless gsuite_groups.select{|group| group['mail'] == excel_group['メールアドレス']}.nil?
+      next unless gsuite_groups.select{|gsuite_group| gsuite_group['mail'] == excel_group['mail']}.nil?
       #next if gsuite_groups.include?("#{excel_group['mail']}")
 
       begin
         group = Google::Apis::AdminDirectoryV1::Group.new(
           email: "#{excel_group["mail"]}",
-          name: "#{HEAD}#{excel_group["name"]}",
+          name: "#{arg[:head]}#{excel_group["name"]}",
           description: "#{excel_group["description"]}"
         )
         #@directory_auth.insert_group(group)
       rescue => exception
-        Log.error("グループの作成でエラーが発生しました。\nグループ名:#{excel_group['name']}/グループアドレス:#{excel_group['mail']}")
+        Log.error("グループの作成でエラーが発生しました。グループ名:#{excel_group['name']}/グループアドレス:#{excel_group['mail']}")
         Log.error("#{exception}")
         SendMail.error("グループの作成でエラーが発生しました。\nグループ名:#{excel_group['name']}\nグループアドレス:#{excel_group['mail']}\n#{exception}")
       else
@@ -83,10 +83,10 @@ class Ggroup < Gsuite
 
       begin
         group_setting = patch_service.get_group("#{excel_group["mail"]}")
-        next if  group_setting.who_can_post_message == "#{GROUP_REFERENSE}" && group_setting.show_in_group_directory == true
+        next if  group_setting.who_can_post_message == "#{arg[:reference]}" && group_setting.show_in_group_directory == true
 
         setting = Google::Apis::GroupssettingsV1::Groups.new(
-          who_can_post_message: "#{GROUP_REFERENSE}",
+          who_can_post_message: "#{arg[:reference]}",
           show_in_group_directory: "#{SHOW_DIRECTORY}"
         )
         #@groups_settings_auth.patch_group("#{excel_group["mail"]}", setting)
@@ -137,7 +137,7 @@ class Ggroup < Gsuite
       begin
         #@directory_auth.delete_member("#{excel_group['mail']}","#{delete_member}")
       rescue => exception
-        Log.fatal("グループのメンバー削除でエラーが発生しました。グループ名:#{excel_group['name']}、削除対象メンバー:#{delete_member}")
+        Log.fatal("グループのメンバー削除でエラーが発生しました。グループ名:#{excel_group['name']}/削除対象メンバー:#{delete_member}")
         Log.fatal("#{exception}")
         SendMail.error("グループのメンバー削除で異常が発生しました。\nグループ名:#{excel_group['name']}\n削除対象メンバー:#{delete_member}\n#{exception}")
         next

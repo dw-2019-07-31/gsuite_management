@@ -20,7 +20,8 @@ ORGANIZATION_DESCRIPTION = 'Organization'
 INTERNAL_DESCRIPTION = 'Internal Office'
 EXTERNAL_DESCRIPTION = 'External Office'
 #その他
-GROUP_REFERENSE = 'ANYONE_CAN_POST'
+INTERNAL_REFERENSE = 'ALL_IN_DOMAIN_CAN_POST'
+EXTERNAL_REFERENSE = 'ANYONE_CAN_POST'
 SHOW_DIRECTORY = 'true'
 PASSWORD = 'Dad880188'
 HEAD = 'DW_'
@@ -28,13 +29,13 @@ MEMBER_ROLE = 'MEMBER'
 #ファイルパス
 EMPLOYEE_FILE_NAME = ['./tmp/社員情報.xlsx']
 #INTERNAL_FILE_NAME = '/mnt/gsuite/open/01_全社共通/GSuite_社内限定用アドレス_中村和寛/社内限定用アドレス管理表.xlsx'
-INTERNAL_FILE_NAME = ['C:/Users/s_urano/Desktop/GSuite_アドレス帳/社内限定用アドレス管理表.xlsx']
+INTERNAL_FILE_NAME = ['C:/Users/s_urano/Desktop/社内限定用アドレス管理表.xlsx']
 #EXTERNAL_SHOP_FILE_NAME = '/mnt/gsuite/close/ADIV/ADIV_Share/GSuite_アドレス帳/外部公開用アドレス管理表（店舗用）.xlsx'
 #EXTERNAL_PUBLIC_FILE_NAME = '/mnt/gsuite/close/ADIV/ADIV_Share/GSuite_アドレス帳/外部公開用アドレス管理表.xlsx'
 #EXTERNAL_FILE_NAME = ['/mnt/gsuite/close/ADIV/ADIV_Share/GSuite_アドレス帳/外部公開用アドレス管理表（店舗用）.xlsx',
 #                    '/mnt/gsuite/close/ADIV/ADIV_Share/GSuite_アドレス帳/外部公開用アドレス管理表.xlsx']
-EXTERNAL_FILE_NAME = ['C:/Users/s_urano/Desktop/GSuite_アドレス帳/外部公開用アドレス管理表（店舗用）.xlsx',
-                        'C:/Users/s_urano/Desktop/GSuite_アドレス帳/外部公開用アドレス管理表.xlsx']
+EXTERNAL_FILE_NAME = ['C:/Users/s_urano/Desktop/外部公開用アドレス管理表（店舗用）.xlsx',
+                        'C:/Users/s_urano/Desktop/外部公開用アドレス管理表.xlsx']
 #組織部門
 ORGUNIT = '/全許可'
 ORGUNIT_ICTG = '/ICTG'

@@ -6,7 +6,7 @@ require 'fileutils'
 require './lib/ExcelGroup.rb'
 require './lib/GsuiteGroup.rb'
 require './lib/Log.rb'
-require 'json'
+require './lib/Constant.rb'
 
 Log.instance
 gsuite = Ggroup.instance
@@ -14,4 +14,4 @@ excel = Egroup.instance
 
 excel_groups = excel.get_group_list
 
-gsuite.create_groups(excel_groups)
+gsuite.create_groups(excel_groups, head:"#{HEAD}", reference:"#{EXTERNAL_REFERENSE}")
