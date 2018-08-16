@@ -22,6 +22,7 @@ class Employee < Excel
       Log.error("ユーザー情報のハッシュデータ作成処理でエラーが発生しました。")
       Log.error("#{exception}")
       SendMail.error("ユーザー情報のハッシュデータ作成処理でエラーが発生しました。\n#{exception}")
+      exit
     end
 
   end  
@@ -42,6 +43,7 @@ class Employee < Excel
       Log.error("ユーザーの組織部門の取得でエラーが発生しました。")
       Log.error("#{exception}")
       SendMail.error("ユーザーの組織部門の取得でエラーが発生しました。\n#{exception}")
+      exit
     end
 
     orgunit

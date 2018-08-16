@@ -18,13 +18,16 @@ class Ggroup < Gsuite
     loop do
       begin
         list = @directory_auth.list_groups(customer: 'my_customer', page_token: "#{pagetoken}")
-        list.groups.each{|group| groups << group.email}
+        list.groups.each{|group| 
+          groups << {'mail' => group.email, 'name' => group.name, 'description' => group.description}
+        }
         pagetoken = list.next_page_token
         break if pagetoken.nil?
       rescue => exception
         Log.error("Gsuiteのグループ一覧取得でエラーが発生しました。")
         Log.error("#{exception}")
         SendMail.error("Gsuiteのグループ一覧取得でエラーが発生しました。\n#{exception}")
+        exit
       end
     end
 
@@ -47,6 +50,7 @@ class Ggroup < Gsuite
         Log.error("Gsuiteのメンバー一覧取得でエラーが発生しました。")
         Log.error("#{exception}")
         SendMail.error("Gsuiteのメンバー一覧取得でエラーが発生しました。\n#{exception}")
+        exit
       end
     end
 
@@ -59,7 +63,8 @@ class Ggroup < Gsuite
     gsuite_groups = self.get_groups
 
     excel_groups.each{|excel_group| 
-      next if gsuite_groups.include?("#{excel_group['mail']}")
+      next unless gsuite_groups.select{|group| group['mail'] == excel_group['メールアドレス']}.nil?
+      #next if gsuite_groups.include?("#{excel_group['mail']}")
 
       begin
         group = Google::Apis::AdminDirectoryV1::Group.new(
@@ -138,6 +143,30 @@ class Ggroup < Gsuite
         next
       else
         Log.info("グループのメンバーを削除しました。グループ名：#{excel_group['name']}、削除対象メンバー:#{delete_member}")
+      end
+    }
+
+  end
+
+  def delete_groups
+
+    groups = self.get_groups
+
+    groups.each{|group|
+
+      members = Array.new
+      members = self.get_members(group)
+    
+      next unless members.empty?
+      begin
+        #@directory_auth.delete_group("#{group}")
+      rescue => exception
+        Log.error("グループの削除でエラーが発生しました。グループ名:#{group}")
+        Log.error("#{exception}")
+        SendMail.error("グループの削除でエラーが発生しました。\nグループ名:#{group}\n#{exception}")
+        next
+      else
+        Log.info("グループを削除しました。グループ名:#{group}")
       end
     }
 

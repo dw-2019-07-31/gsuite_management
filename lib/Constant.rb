@@ -1,21 +1,21 @@
 #ドメイン
 DOMAIN = '@dadway.com'
 #会議体アドレス
-ALL = 'all@dadway.com'
-CONFERENCES = ['executive@dadway.com',
-                'mirai@dadway.com',
-                'business_managers@dadway.com',
-                'contact@dadway.com']
+#ALL = 'all@dadway.com'
+#CONFERENCES = ['executive@dadway.com',
+#                'mirai@dadway.com',
+#                'business_managers@dadway.com',
+#                'contact@dadway.com']
 #EXECUTIVE = 'executive@dadway.com'
 #DETERMINATION = 'determination@dadway.com'
 #会議体名
-ALL_NAME = 'ALL'
-EXECUTIVE_NAME = 'EXECUTIVE'
-DETERMINATION_NAME = 'DETERMINATION'
+#ALL_NAME = 'ALL'
+#EXECUTIVE_NAME = 'EXECUTIVE'
+#DETERMINATION_NAME = 'DETERMINATION'
 #グループ概要
-ALL_DESCRIPTION = 'Whole Company Common'
-DETERMINATION_DESCRIPTION = 'Determination Report Conference'
-EXECUTIVE_DESCRIPTION = 'Executive Conference'
+#ALL_DESCRIPTION = 'Whole Company Common'
+#DETERMINATION_DESCRIPTION = 'Determination Report Conference'
+#EXECUTIVE_DESCRIPTION = 'Executive Conference'
 ORGANIZATION_DESCRIPTION = 'Organization'
 INTERNAL_DESCRIPTION = 'Internal Office'
 EXTERNAL_DESCRIPTION = 'External Office'

@@ -19,19 +19,19 @@ class User < Gsuite
         list = @directory_auth.list_users(customer: 'my_customer', max_results: 500,  page_token: "#{pagetoken}")
         list.users.each{|user| 
           if user.phones.nil?
-            hash = { 'mail' => user.primary_email, 'family_name' => user.name.family_name, 'phone'=> ""}
+            users << { 'mail' => user.primary_email, 'family_name' => user.name.family_name, 'phone'=> ""}
           else
             user.phones.each{|phone|
-              hash = { 'mail' => user.primary_email, 'family_name' => user.name.family_name, 'phone'=> phone['value']}
+              users << { 'mail' => user.primary_email, 'family_name' => user.name.family_name, 'phone'=> phone['value']}
             }
           end
-          users << hash
         }
         pagetoken = list.next_page_token
         break if pagetoken.nil?
       rescue => exception
         Log.error("Gsuiteのユーザー取得でエラーが発生しました。")
         SendMail.error("ユーザー作成でエラーが発生しました。\n#{exception}")
+        exit
       end
     end
 
@@ -44,7 +44,7 @@ class User < Gsuite
     gsuite_users = self.get_users
 
     excel_users.each{|excel_user|
-      next unless gsuite_users.select{|user| user['mail'].include?("#{excel_user['メールアドレス']}")}.nil?
+      next unless gsuite_users.select{|user| user['mail'] == excel_user['メールアドレス']}.nil?
 
       orgunit = Employee.get_orgunits(excel_user)
       begin
