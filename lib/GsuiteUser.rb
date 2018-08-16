@@ -11,7 +11,7 @@ class User < Gsuite
 
   def get_users
     
-    gsuite_users = Array.new
+    users = Array.new
     pagetoken = ""
 
     loop do
@@ -25,7 +25,7 @@ class User < Gsuite
               hash = { 'mail' => user.primary_email, 'family_name' => user.name.family_name, 'phone'=> phone['value']}
             }
           end
-          gsuite_users << hash
+          users << hash
         }
         pagetoken = list.next_page_token
         break if pagetoken.nil?
@@ -35,7 +35,7 @@ class User < Gsuite
       end
     end
 
-    gsuite_users
+    users
 
   end
 
