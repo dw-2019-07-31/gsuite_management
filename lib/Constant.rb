@@ -2,8 +2,12 @@
 DOMAIN = '@dadway.com'
 #会議体アドレス
 ALL = 'all@dadway.com'
-EXECUTIVE = 'executive@dadway.com'
-DETERMINATION = 'determination@dadway.com'
+CONFERENCES = ['executive@dadway.com',
+                'mirai@dadway.com',
+                'business_managers@dadway.com',
+                'contact@dadway.com']
+#EXECUTIVE = 'executive@dadway.com'
+#DETERMINATION = 'determination@dadway.com'
 #会議体名
 ALL_NAME = 'ALL'
 EXECUTIVE_NAME = 'EXECUTIVE'

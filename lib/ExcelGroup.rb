@@ -1,8 +1,15 @@
 require './lib/Excel.rb'
+require 'json'
 
 class Egroup < Excel
 
   def initialize
+
+    @conferences = Hash.new
+    File.open("./etc/organization.json") do |file|
+      @conferences = JSON.load(file)
+    end
+
     super(EMPLOYEE_FILE_NAME)
     groups = Array.new
     @data.each {|row|
@@ -12,37 +19,13 @@ class Egroup < Excel
       groups << row
     }
     @data = groups
+
   end
 
-  def get_executive
+  def get_meeting_structure(header)
     members = Array.new
     @data.each{|row|
-      next if row['幹部会議メンバー'].nil?
-      next unless row['兼務情報'].nil?
-      members << row['メールアドレス']
-    }
-    members.sort
-  end
-
-  def get_determination
-    members = Array.new
-    @data.each{|row|
-      next if row['決定報告会議メンバー'].nil?
-      next unless row['兼務情報'].nil?
-      members << row['メールアドレス']
-    }
-    members.sort
-  end
-  
-  def get_meeting_header_name(group)
-    group.sub!(/^DW_/, '')
-    group.concat("メンバー")
-  end
-
-  def get_meeting_structure(meeting_structure_name)
-    members = Array.new
-    @data.each{|row|
-      next if row[meeting_structure_name].nil?
+      next if row[header].nil?
       next unless row['兼務情報'].nil?
       members << row['メールアドレス']
     }
@@ -61,6 +44,8 @@ class Egroup < Excel
   def get_group_list
 
     groups = Array.new
+
+    @conferences.each_key{|key| groups << @conferences["#{key}"]}
 
     get_child_group_list if @child_group.nil?
     get_parent_group_list if @parent_group.nil?
@@ -81,7 +66,8 @@ class Egroup < Excel
     @data.each{|row|
       next if row['メールアドレス'].nil?
       #@child_groups << row['グループ名(英名略称)'] unless row['グループ名(英名略称)'].nil?
-      @child_groups << { 'mail' => "#{row['グループ名(英名略称)'].downcase}#{DOMAIN}", 'name' =>  "#{HEAD}#{row['グループ名(英名略称)']}", 'description' => "#{ORGANIZATION_DESCRIPTION}"} unless row['グループ名(英名略称)'].nil?
+      @child_groups << { 'mail' => "#{row['グループ名(英名略称)'].downcase}#{DOMAIN}", 'name' =>  "#{row['グループ名(英名略称)']}",\
+                         'description' => "#{ORGANIZATION_DESCRIPTION}"} unless row['グループ名(英名略称)'].nil?
     }
     @child_groups.uniq!
     @child_groups.compact!
@@ -95,7 +81,8 @@ class Egroup < Excel
     @parent_groups = Array.new
     @data.each{|row|
       next if row['メールアドレス'].nil?
-      @parent_groups << { 'mail' => "#{row['親組織'].downcase}#{DOMAIN}", 'name' =>  "#{HEAD}#{row['親組織']}", 'description' => "#{ORGANIZATION_DESCRIPTION}"} unless row['親組織'].nil?
+      @parent_groups << { 'mail' => "#{row['親組織'].downcase}#{DOMAIN}", 'name' =>  "#{row['親組織']}",\
+                           'description' => "#{ORGANIZATION_DESCRIPTION}"} unless row['親組織'].nil?
     }
     @parent_groups.uniq!
     @parent_groups.compact!
@@ -104,7 +91,7 @@ class Egroup < Excel
 
   end
 
-  def get_members(group_name)
+  def get_organization_members(group_name)
     members = Array.new
     @data.each{|row|
       next if row['メールアドレス'].nil?
@@ -150,10 +137,10 @@ class Egroup < Excel
 
   def get_members_recurse(parent_group_name)
 
-    return get_members(parent_group_name) if get_child_groups(parent_group_name) == nil
+    return get_organization_members(parent_group_name) if get_child_groups(parent_group_name) == nil
 
     members = Array.new
-    members << get_members(parent_group_name)
+    members << get_organization_members(parent_group_name)
     get_child_groups(parent_group_name).each {|child_group|
       members << get_members_recurse(child_group)
     }
@@ -164,5 +151,45 @@ class Egroup < Excel
     members.sort
 
   end
+
+  def get_members(group)
+
+    if group['mail'] == @conferences['all']['mail']
+      members = self.get_all
+    elsif group['mail'] == @conferences['executive']['mail'] || group['mail'] == @conferences['mirai']['mail'] \
+          || group['mail'] == @conferences['business_managers']['mail'] || group['mail'] == @conferences['contact']['mail']
+      members = self.get_meeting_structure(group['header'])
+    else 
+      members = self.get_members_recurse(group['name'])
+    end
+
+    members
+  
+  end
+
+    #def get_executive
+  #  members = Array.new
+  #  @data.each{|row|
+  #    next if row['幹部会議メンバー'].nil?
+  #    next unless row['兼務情報'].nil?
+  #    members << row['メールアドレス']
+  #  }
+  #  members.sort
+  #end
+
+  #def get_determination
+  #  members = Array.new
+  #  @data.each{|row|
+  #    next if row['決定報告会議メンバー'].nil?
+  #    next unless row['兼務情報'].nil?
+  #    members << row['メールアドレス']
+  #  }
+  #  members.sort
+  #end
+  
+  #def get_meeting_header_name(group)
+  #  group.sub!(/^DW_/, '')
+  #  group.concat("メンバー")
+  #end
 
 end

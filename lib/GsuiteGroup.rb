@@ -12,17 +12,45 @@ class Ggroup < Gsuite
 
   def get_groups
 
-    gsuite_groups = Array.new
+    groups = Array.new
     pagetoken = ""
 
     loop do
-      list = @directory_auth.list_groups(customer: 'my_customer', page_token: "#{pagetoken}")
-      list.groups.each{|group| gsuite_groups << group.email}
-      pagetoken = list.next_page_token
-      break if pagetoken.nil?
+      begin
+        list = @directory_auth.list_groups(customer: 'my_customer', page_token: "#{pagetoken}")
+        list.groups.each{|group| groups << group.email}
+        pagetoken = list.next_page_token
+        break if pagetoken.nil?
+      rescue => exception
+        Log.error("Gsuiteのグループ一覧取得でエラーが発生しました。")
+        Log.error("#{exception}")
+        SendMail.error("Gsuiteのグループ一覧取得でエラーが発生しました。\n#{exception}")
+      end
     end
 
-    gsuite_groups
+    groups
+
+  end
+
+  def get_members(group)
+
+    members = Array.new
+    pagetoken = ""
+
+    loop do
+      begin
+        list = @directory_auth.list_members("#{group['mail']}", page_token: "#{pagetoken}")
+        list.members.each{|member| members << member.email} unless list.members.nil?
+        pagetoken = list.next_page_token
+        break if pagetoken.nil?
+      rescue => exception
+        Log.error("Gsuiteのメンバー一覧取得でエラーが発生しました。")
+        Log.error("#{exception}")
+        SendMail.error("Gsuiteのメンバー一覧取得でエラーが発生しました。\n#{exception}")
+      end
+    end
+
+    members
 
   end
 
@@ -36,7 +64,7 @@ class Ggroup < Gsuite
       begin
         group = Google::Apis::AdminDirectoryV1::Group.new(
           email: "#{excel_group["mail"]}",
-          name: "#{excel_group["name"]}",
+          name: "#{HEAD}#{excel_group["name"]}",
           description: "#{excel_group["description"]}"
         )
         #@directory_auth.insert_group(group)
@@ -61,8 +89,55 @@ class Ggroup < Gsuite
         Log.error("グループの設定変更でエラーが発生しました。#{excel_group['name']}:#{excel_group['mail']}")
         Log.error("#{exception}")
         SendMail.error("グループの設定変更でエラーが発生しました。#{excel_group['name']}:#{excel_group['mail']}\n#{exception}")
+        next
       else
         Log.info("グループの設定変更をしました。#{excel_group['name']}:#{excel_group['mail']}")
+      end
+    }
+
+  end
+
+  def add_members(excel_group, excel_members)
+        
+    gsuite_members = self.get_members(excel_group)
+
+    add_members = excel_members - gsuite_members
+      
+    add_members.each{|add_member|
+      begin
+        member = Google::Apis::AdminDirectoryV1::Member.new(
+          email: "#{add_member}",
+          role: "#{MEMBER_ROLE}"
+        )
+        #@directory_auth.insert_member("#{excel_group['email']}",member)
+      rescue => exception
+        Log.error("グループのメンバー追加でエラーが発生しました。グループ名:#{excel_group['name']}/追加メンバー:#{add_member}")
+        Log.error("#{exception}")
+        SendMail.error("グループのメンバー追加でエラーが発生しました。\nグループ名:#{excel_group['name']}\n追加メンバー:#{add_member}\n#{exception}")
+        next
+      else
+        Log.info("グループにメンバーを追加しました。グループ名:#{excel_group['name']}/追加メンバー:#{add_member}")
+      end
+    }
+    
+  end
+
+  def delete_members(excel_group, excel_members)
+
+    gsuite_members = self.get_members(excel_group)
+
+    excel_members == nil ? delete_members = gsuite_members : delete_members = gsuite_members - excel_members
+
+    delete_members.each{|delete_member|
+      begin
+        #@directory_auth.delete_member("#{excel_group['mail']}","#{delete_member}")
+      rescue => exception
+        Log.fatal("グループのメンバー削除でエラーが発生しました。グループ名:#{excel_group['name']}、削除対象メンバー:#{delete_member}")
+        Log.fatal("#{exception}")
+        SendMail.error("グループのメンバー削除で異常が発生しました。\nグループ名:#{excel_group['name']}\n削除対象メンバー:#{delete_member}\n#{exception}")
+        next
+      else
+        Log.info("グループのメンバーを削除しました。グループ名：#{excel_group['name']}、削除対象メンバー:#{delete_member}")
       end
     }
 

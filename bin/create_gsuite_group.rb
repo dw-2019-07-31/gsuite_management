@@ -12,16 +12,6 @@ Log.instance
 gsuite = Ggroup.instance
 excel = Egroup.instance
 
-conferences = Hash.new
-
-File.open("./etc/organization.json") do |file|
-  conferences = JSON.load(file)
-end
-
-#会議体グループの作成
-gsuite.create_groups(conferences)
-
 excel_groups = excel.get_group_list
 
-#組織グループの作成
 gsuite.create_groups(excel_groups)
