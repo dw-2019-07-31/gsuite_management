@@ -1,9 +1,10 @@
 require './lib/Gsuite.rb'
+require './lib/GsuiteUser.rb'
 require './lib/Constant.rb'
 require './lib/Log.rb'
 require './lib/Mail.rb'
 
-class Ggroup < Gsuite
+class Group < Gsuite
 
   def initialize
     self.directory_auth
@@ -11,10 +12,8 @@ class Ggroup < Gsuite
   end
 
   def get_groups
-
     groups = Array.new
     pagetoken = ""
-
     loop do
       begin
         list = @directory_auth.list_groups(customer: 'my_customer', page_token: "#{pagetoken}")
@@ -30,16 +29,12 @@ class Ggroup < Gsuite
         exit
       end
     end
-
     groups
-
   end
 
   def get_members(group)
-
     members = Array.new
     pagetoken = ""
-
     loop do
       begin
         list = @directory_auth.list_members("#{group['mail']}", page_token: "#{pagetoken}")
@@ -53,19 +48,14 @@ class Ggroup < Gsuite
         exit
       end
     end
-
     members
-
   end
 
   def create_groups(excel_groups, **arg)
-
     gsuite_groups = self.get_groups
-
     excel_groups.each{|excel_group| 
       next unless gsuite_groups.select{|gsuite_group| gsuite_group['mail'] == excel_group['mail']}.nil?
       #next if gsuite_groups.include?("#{excel_group['mail']}")
-
       begin
         group = Google::Apis::AdminDirectoryV1::Group.new(
           email: "#{excel_group["mail"]}",
@@ -80,7 +70,6 @@ class Ggroup < Gsuite
       else
         Log.info("グループを作成しました。#{excel_group['name']}:#{excel_group['mail']}")
       end
-
       begin
         group_setting = patch_service.get_group("#{excel_group["mail"]}")
         next if  group_setting.who_can_post_message == "#{arg[:reference]}" && group_setting.show_in_group_directory == true
@@ -99,22 +88,20 @@ class Ggroup < Gsuite
         Log.info("グループの設定変更をしました。#{excel_group['name']}:#{excel_group['mail']}")
       end
     }
-
   end
 
   def add_members(excel_group, excel_members)
-        
+    User.check('s_urano@dadway.com')
     gsuite_members = self.get_members(excel_group)
-
     add_members = excel_members - gsuite_members
-      
     add_members.each{|add_member|
+      next unless User.check(add_member) && Group.check(excel_group)
       begin
         member = Google::Apis::AdminDirectoryV1::Member.new(
           email: "#{add_member}",
           role: "#{MEMBER_ROLE}"
         )
-        #@directory_auth.insert_member("#{excel_group['email']}",member)
+        #@directory_auth.insert_member(excel_group,member)
       rescue => exception
         Log.error("グループのメンバー追加でエラーが発生しました。グループ名:#{excel_group['name']}/追加メンバー:#{add_member}")
         Log.error("#{exception}")
@@ -124,15 +111,11 @@ class Ggroup < Gsuite
         Log.info("グループにメンバーを追加しました。グループ名:#{excel_group['name']}/追加メンバー:#{add_member}")
       end
     }
-    
   end
 
   def delete_members(excel_group, excel_members)
-
     gsuite_members = self.get_members(excel_group)
-
     excel_members == nil ? delete_members = gsuite_members : delete_members = gsuite_members - excel_members
-
     delete_members.each{|delete_member|
       begin
         #@directory_auth.delete_member("#{excel_group['mail']}","#{delete_member}")
@@ -145,18 +128,13 @@ class Ggroup < Gsuite
         Log.info("グループのメンバーを削除しました。グループ名：#{excel_group['name']}、削除対象メンバー:#{delete_member}")
       end
     }
-
   end
 
   def delete_groups
-
     groups = self.get_groups
-
     groups.each{|group|
-
       members = Array.new
       members = self.get_members(group)
-    
       next unless members.empty?
       begin
         #@directory_auth.delete_group("#{group}")
@@ -169,15 +147,12 @@ class Ggroup < Gsuite
         Log.info("グループを削除しました。グループ名:#{group}")
       end
     }
-
   end
 
   def check(group)
-
-    gsuite_group_email = Array.new
-    @group_response.groups.each{|group| gsuite_group_email << group.email}
-    gsuite_group_email.include?(group)
-
+    groups = Array.new
+    groups = self.get_group(group)
+    groups.include?(group)
   end
 
 end

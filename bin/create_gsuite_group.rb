@@ -9,8 +9,8 @@ require './lib/Log.rb'
 require './lib/Constant.rb'
 
 Log.instance
-gsuite = Ggroup.instance
-excel = Egroup.instance
+gsuite = Group.instance
+excel = Organization.instance
 
 excel_groups = excel.get_group_list
 

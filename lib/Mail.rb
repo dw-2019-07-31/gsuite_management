@@ -11,6 +11,8 @@ class SendMail
        subject  "【GSuite】エラー通知"
        body     "#{text}"
     end
+
+    mail.charset = 'utf-8'
    
     mail.delivery_method :smtp, { 
        address: 'dwml.dad-way.local',

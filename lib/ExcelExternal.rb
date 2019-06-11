@@ -6,12 +6,8 @@ class External < Excel
 
   def initialize
     super(EXTERNAL_FILE_NAME)
-
-    @data.each{|row| 
-      row['英語名称'] += '@dadway.com' unless row['英語名称'] =~ /@dadway.com$/
-    }
+    @data.each{|row| row['英語名称'] += '@dadway.com' unless row['英語名称'] =~ /@dadway.com$/ }
     @data.each{|row| row.delete('管理者')}
-
   end
 
   def get
@@ -21,7 +17,7 @@ class External < Excel
   def get_members(english_name)
     members = Array.new
     @data.each{|row|
-      next unless row['英語名称'] == english_name
+      next unless row['英語名称'] == english_name['mail']
       members << row['グループメンバー']
     }
     members
@@ -32,7 +28,7 @@ class External < Excel
     @data.each{|row|
       check = nil
       groups.each{|group| (check = 1 ; break) if group['英語名称'] == row['英語名称']}
-      groups << {'mail' => row['英語名称'], 'name' => row['連絡先グループ名'], 'description' => "#{INTERNAL_DESCRIPTION}"} if check == nil
+      groups << {'mail' => row['英語名称'], 'name' => row['連絡先グループ名'], 'description' => "#{EXTERNAL_DESCRIPTION}"} if check == nil
     }
     groups
   end

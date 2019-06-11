@@ -1,4 +1,3 @@
+.ruby-version
+.vscode
 log
-tmp
-*.swp
-security_update.sh

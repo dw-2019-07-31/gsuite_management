@@ -8,8 +8,8 @@ require './lib/GsuiteGroup.rb'
 require './lib/Log.rb'
 
 Log.instance
-gsuite = Ggroup.instance
-excel = Egroup.instance
+gsuite = Group.instance
+excel = Organization.instance
 
 excel_groups = excel.get_group_list
 

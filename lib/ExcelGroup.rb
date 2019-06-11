@@ -1,15 +1,13 @@
 require './lib/Excel.rb'
 require 'json'
 
-class Egroup < Excel
+class Organization < Excel
 
   def initialize
-
     @conferences = Hash.new
     File.open("./etc/organization.json") do |file|
       @conferences = JSON.load(file)
     end
-
     super(EMPLOYEE_FILE_NAME)
     groups = Array.new
     @data.each {|row|
@@ -19,7 +17,6 @@ class Egroup < Excel
       groups << row
     }
     @data = groups
-
   end
 
   def get_meeting_structure(header)
@@ -42,26 +39,18 @@ class Egroup < Excel
   end
 
   def get_group_list
-
     groups = Array.new
-
     @conferences.each_key{|key| groups << @conferences["#{key}"]}
-
     get_child_group_list if @child_group.nil?
     get_parent_group_list if @parent_group.nil?
-
     groups << @child_groups
     groups << @parent_groups
-
     groups.flatten!
     groups.compact!
-
     groups.uniq
-
   end
 
   def get_child_group_list
-
     @child_groups = Array.new
     @data.each{|row|
       next if row['メールアドレス'].nil?
@@ -71,13 +60,10 @@ class Egroup < Excel
     }
     @child_groups.uniq!
     @child_groups.compact!
-
     @child_groups
-
   end
 
   def get_parent_group_list
-
     @parent_groups = Array.new
     @data.each{|row|
       next if row['メールアドレス'].nil?
@@ -86,9 +72,7 @@ class Egroup < Excel
     }
     @parent_groups.uniq!
     @parent_groups.compact!
-
     @parent_groups
-
   end
 
   def get_organization_members(group_name)
@@ -96,22 +80,17 @@ class Egroup < Excel
     @data.each{|row|
       next if row['メールアドレス'].nil?
       next if row['グループ名(英名略称)'].nil?
-
       members << row['メールアドレス'] if row['グループ名(英名略称)'] == group_name
     }
-
     return nil if members.count == 0
-
     members
   end
 
   def parse_hierarchy
-
     @hierarchy = Hash.new
     @data.each{|row|
       next if row['グループ名(英名略称)'].nil?
       next if row['親組織'].nil?
-
       if @hierarchy.key?(row['親組織'])
         if not @hierarchy[row['親組織']].include?(row['グループ名(英名略称)'])
           @hierarchy[row['親組織']] << row['グループ名(英名略称)']
@@ -120,40 +99,29 @@ class Egroup < Excel
         @hierarchy.store(row['親組織'], Array(row['グループ名(英名略称)']))
       end
     }
-
     return nil if @hierarchy.count == 0
-
     @hierarchy
-
   end
 
   def get_child_groups(parent_group_name)
-
     parse_hierarchy if @hierarchy.nil?
-
     @hierarchy[parent_group_name]
-
   end
 
   def get_members_recurse(parent_group_name)
-
     return get_organization_members(parent_group_name) if get_child_groups(parent_group_name) == nil
-
     members = Array.new
     members << get_organization_members(parent_group_name)
     get_child_groups(parent_group_name).each {|child_group|
       members << get_members_recurse(child_group)
     }
-
     members.flatten!
     members.uniq!
     members.compact!
     members.sort
-
   end
 
   def get_members(group)
-
     if group['mail'] == @conferences['all']['mail']
       members = self.get_all
     elsif group['mail'] == @conferences['executive']['mail'] || group['mail'] == @conferences['mirai']['mail'] \
@@ -162,9 +130,7 @@ class Egroup < Excel
     else 
       members = self.get_members_recurse(group['name'])
     end
-
     members
-  
   end
 
     #def get_executive

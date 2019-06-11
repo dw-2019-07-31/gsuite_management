@@ -7,6 +7,6 @@ require './lib/GsuiteGroup.rb'
 require './lib/Log.rb'
 
 Log.instance
-gsuite = Ggroup.instance
+gsuite = Group.instance
 
 gsuite.delete_groups

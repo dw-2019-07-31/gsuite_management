@@ -10,7 +10,7 @@ require './lib/Log.rb'
 Log.instance
 gsuite = User.instance
 excel = Employee.instance
-
+p 'aaaaaaa'
 excel_users = excel.get_users
 
 gsuite.create_users(excel_users)
