@@ -10,16 +10,17 @@ class Group < Gsuite
     self.directory_auth
     self.groups_settings_auth
     self.get_users
+    self.get_groups
   end
 
   def get_groups
-    groups = Array.new
+    @groups = Array.new
     pagetoken = ""
     loop do
       begin
         list = @directory_auth.list_groups(customer: 'my_customer', page_token: "#{pagetoken}")
         list.groups.each{|group| 
-          groups << {'mail' => group.email, 'name' => group.name, 'description' => group.description}
+          @groups << {'mail' => group.email, 'name' => group.name, 'description' => group.description}
         }
         pagetoken = list.next_page_token
         break if pagetoken.nil?
@@ -30,7 +31,7 @@ class Group < Gsuite
         exit
       end
     end
-    groups
+    @groups
   end
 
   def get_members(group)
@@ -53,10 +54,10 @@ class Group < Gsuite
   end
 
   def create_groups(excel_groups, **arg)
-    gsuite_groups = self.get_groups
+    gsuite_groups = @groups
     excel_groups.each{|excel_group| 
-      next unless gsuite_groups.select{|gsuite_group| gsuite_group['mail'] == excel_group['mail']}.nil?
-      #next if gsuite_groups.include?("#{excel_group['mail']}")
+      # グループが既に存在している場合は、next
+      next if group_check(excel_group['mail'])
       begin
         group = Google::Apis::AdminDirectoryV1::Group.new(
           email: "#{excel_group["mail"]}",
@@ -72,7 +73,7 @@ class Group < Gsuite
         Log.info("グループを作成しました。#{excel_group['name']}:#{excel_group['mail']}")
       end
       begin
-        group_setting = patch_service.get_group("#{excel_group["mail"]}")
+        group_setting = @groups_settings_auth.get_group("#{excel_group["mail"]}")
         next if  group_setting.who_can_post_message == "#{arg[:reference]}" && group_setting.show_in_group_directory == true
 
         setting = Google::Apis::GroupssettingsV1::Groups.new(
@@ -83,7 +84,7 @@ class Group < Gsuite
       rescue => exception
         Log.error("グループの設定変更でエラーが発生しました。#{excel_group['name']}:#{excel_group['mail']}")
         Log.error("#{exception}")
-        SendMail.error("グループの設定変更でエラーが発生しました。#{excel_group['name']}:#{excel_group['mail']}\n#{exception}")
+        SendMail.error("グループの設定変更でエラーが発生しました。\nグループ設定を手動で行うかグループを削除してスクリプトを実行し直してください。\n#{excel_group['name']}:#{excel_group['mail']}\n#{exception}")
         next
       else
         Log.info("グループの設定変更をしました。#{excel_group['name']}:#{excel_group['mail']}")
@@ -95,7 +96,7 @@ class Group < Gsuite
     gsuite_members = self.get_members(excel_group)
     add_members = excel_members - gsuite_members
     add_members.each{|add_member|
-      next unless user_check(add_member) && group_check(excel_group)
+      next unless user_check(add_member) && group_check(excel_group['mail'])
       begin
         member = Google::Apis::AdminDirectoryV1::Member.new(
           email: "#{add_member}",
@@ -151,10 +152,10 @@ class Group < Gsuite
 
   private
 
-    def group_check(group)
-      groups = Array.new
-      self.get_groups.each{|group| groups << group['mail']}
-      groups.include?(group['mail'])
+    def group_check(group_mail)
+      group_mail_list = Array.new
+      @groups.each{|group| group_mail_list << group['mail']}
+      group_mail_list.include?(group_mail)
     end
 
 end
