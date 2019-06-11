@@ -9,6 +9,7 @@ class Group < Gsuite
   def initialize
     self.directory_auth
     self.groups_settings_auth
+    self.get_users
   end
 
   def get_groups
@@ -23,9 +24,9 @@ class Group < Gsuite
         pagetoken = list.next_page_token
         break if pagetoken.nil?
       rescue => exception
-        Log.error("Gsuiteのグループ一覧取得でエラーが発生しました。")
+        Log.error("GSuiteのグループ一覧取得でエラーが発生しました。")
         Log.error("#{exception}")
-        SendMail.error("Gsuiteのグループ一覧取得でエラーが発生しました。\n#{exception}")
+        SendMail.error("GSuiteのグループ一覧取得でエラーが発生しました。\n#{exception}")
         exit
       end
     end
@@ -42,9 +43,9 @@ class Group < Gsuite
         pagetoken = list.next_page_token
         break if pagetoken.nil?
       rescue => exception
-        Log.error("Gsuiteのメンバー一覧取得でエラーが発生しました。")
+        Log.error("GSuiteのメンバー一覧取得でエラーが発生しました。")
         Log.error("#{exception}")
-        SendMail.error("Gsuiteのメンバー一覧取得でエラーが発生しました。\n#{exception}")
+        SendMail.error("GSuiteのメンバー一覧取得でエラーが発生しました。\n#{exception}")
         exit
       end
     end
@@ -91,11 +92,10 @@ class Group < Gsuite
   end
 
   def add_members(excel_group, excel_members)
-    User.check('s_urano@dadway.com')
     gsuite_members = self.get_members(excel_group)
     add_members = excel_members - gsuite_members
     add_members.each{|add_member|
-      next unless User.check(add_member) && Group.check(excel_group)
+      next unless user_check(add_member) && group_check(excel_group)
       begin
         member = Google::Apis::AdminDirectoryV1::Member.new(
           email: "#{add_member}",
@@ -149,10 +149,12 @@ class Group < Gsuite
     }
   end
 
-  def check(group)
-    groups = Array.new
-    groups = self.get_group(group)
-    groups.include?(group)
-  end
+  private
+
+    def group_check(group)
+      groups = Array.new
+      self.get_groups.each{|group| groups << group['mail']}
+      groups.include?(group['mail'])
+    end
 
 end

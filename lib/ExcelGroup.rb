@@ -4,9 +4,9 @@ require 'json'
 class Organization < Excel
 
   def initialize
-    @conferences = Hash.new
+    @organizations = Hash.new
     File.open("./etc/organization.json") do |file|
-      @conferences = JSON.load(file)
+      @organizations = JSON.load(file)
     end
     super(EMPLOYEE_FILE_NAME)
     groups = Array.new
@@ -17,6 +17,12 @@ class Organization < Excel
       groups << row
     }
     @data = groups
+  end
+
+  def get_conferences
+    conferences = Array.new
+    @organizations.each_key{|key| conferences << @organizations["#{key}"]['mail'] unless @organizations["#{key}"]['mail'] == 'all@dadway.com'}
+    conferences
   end
 
   def get_meeting_structure(header)
@@ -40,7 +46,7 @@ class Organization < Excel
 
   def get_group_list
     groups = Array.new
-    @conferences.each_key{|key| groups << @conferences["#{key}"]}
+    @organizations.each_key{|key| groups << @organizations["#{key}"]}
     get_child_group_list if @child_group.nil?
     get_parent_group_list if @parent_group.nil?
     groups << @child_groups
@@ -122,10 +128,11 @@ class Organization < Excel
   end
 
   def get_members(group)
-    if group['mail'] == @conferences['all']['mail']
+    if group['mail'] == @organizations['all']['mail']
       members = self.get_all
-    elsif group['mail'] == @conferences['executive']['mail'] || group['mail'] == @conferences['mirai']['mail'] \
-          || group['mail'] == @conferences['business_managers']['mail'] || group['mail'] == @conferences['contact']['mail']
+    # elsif group['mail'] == @organizations['executive']['mail'] || group['mail'] == @organizations['mirai']['mail'] \
+    #       || group['mail'] == @organizations['business_managers']['mail'] || group['mail'] == @organizations['contact']['mail']
+    elsif self.get_conferences().include?(group['mail'])
       members = self.get_meeting_structure(group['header'])
     else 
       members = self.get_members_recurse(group['name'])

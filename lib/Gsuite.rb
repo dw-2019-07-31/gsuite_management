@@ -66,4 +66,37 @@ class Gsuite
     credentials
   end
 
+  # GSuiteのユーザー取得処理はUser/Groupクラスの処理で使用するため、Gsuiteクラスに定義する。
+  # user_checkメソッドも同様の理由によりGsuiteクラスに定義
+  def get_users
+      @gsuite_users = Array.new
+      pagetoken = nil
+      loop do
+        begin
+          list = @directory_auth.list_users(customer: 'my_customer', max_results: 500,  page_token: "#{pagetoken}")
+          list.users.each{|user| 
+            if user.phones.nil?
+              @gsuite_users << { 'mail' => user.primary_email, 'family_name' => user.name.family_name, 'phone'=> ""}
+            else
+              user.phones.each{|phone| @gsuite_users << { 'mail' => user.primary_email, 'family_name' => user.name.family_name, 'phone'=> phone['value'] } }
+            end
+          }
+          pagetoken = list.next_page_token
+          break if pagetoken.nil?
+        rescue => exception
+          Log.error("Gsuiteのユーザー取得でエラーが発生しました。")
+          Log.error("#{exception}")
+          SendMail.error("Gsuiteのユーザー取得でエラーが発生しました。\n#{exception}")
+          exit
+        end
+      end
+      @gsuite_users
+    end
+
+    def user_check(user)
+      mails = Array.new
+      @gsuite_users.each{|gsuite_user| mails << gsuite_user['mail']}
+      mails.include?(user)
+    end
+
 end

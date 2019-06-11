@@ -27,7 +27,8 @@ class External < Excel
     groups = Array.new
     @data.each{|row|
       check = nil
-      groups.each{|group| (check = 1 ; break) if group['英語名称'] == row['英語名称']}
+      # groups.each{|group| (check = 1 ; break) if group['英語名称'] == row['英語名称']}
+      groups.each{|group| (check = 1 ; break) if group['mail'] == row['英語名称']}
       groups << {'mail' => row['英語名称'], 'name' => row['連絡先グループ名'], 'description' => "#{EXTERNAL_DESCRIPTION}"} if check == nil
     }
     groups

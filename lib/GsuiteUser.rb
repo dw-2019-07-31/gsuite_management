@@ -7,6 +7,7 @@ class User < Gsuite
   
   def initialize
     self.directory_auth
+    self.get_users
   end
 
   # def self.get_users
@@ -38,7 +39,7 @@ class User < Gsuite
     #gsuite_users = self.class.get_users
     gsuite_users = get_users
     excel_users.each{|excel_user|
-      next unless gsuite_users.select{|user| user['mail'] == excel_user['メールアドレス']}.nil?
+      next unless @gsuite_users.select{|user| user['mail'] == excel_user['メールアドレス']}.nil?
       orgunit = Employee.get_orgunits(excel_user)
       begin
         user = Google::Apis::AdminDirectoryV1::User.new(
@@ -123,35 +124,35 @@ class User < Gsuite
 
   private
 
-    def get_users
-      users = Array.new
-      pagetoken = nil
-      loop do
-        begin
-          list = @directory_auth.list_users(customer: 'my_customer', max_results: 500,  page_token: "#{pagetoken}")
-          list.users.each{|user| 
-            if user.phones.nil?
-              users << { 'mail' => user.primary_email, 'family_name' => user.name.family_name, 'phone'=> ""}
-            else
-              user.phones.each{|phone| users << { 'mail' => user.primary_email, 'family_name' => user.name.family_name, 'phone'=> phone['value'] } }
-            end
-          }
-          pagetoken = list.next_page_token
-          break if pagetoken.nil?
-        rescue => exception
-          Log.error("Gsuiteのユーザー取得でエラーが発生しました。")
-          Log.error("#{exception}")
-          SendMail.error("Gsuiteのユーザー取得でエラーが発生しました。\n#{exception}")
-          exit
-        end
-      end
-      users
-    end
+    # def get_users
+    #   users = Array.new
+    #   pagetoken = nil
+    #   loop do
+    #     begin
+    #       list = @directory_auth.list_users(customer: 'my_customer', max_results: 500,  page_token: "#{pagetoken}")
+    #       list.users.each{|user| 
+    #         if user.phones.nil?
+    #           users << { 'mail' => user.primary_email, 'family_name' => user.name.family_name, 'phone'=> ""}
+    #         else
+    #           user.phones.each{|phone| users << { 'mail' => user.primary_email, 'family_name' => user.name.family_name, 'phone'=> phone['value'] } }
+    #         end
+    #       }
+    #       pagetoken = list.next_page_token
+    #       break if pagetoken.nil?
+    #     rescue => exception
+    #       Log.error("Gsuiteのユーザー取得でエラーが発生しました。")
+    #       Log.error("#{exception}")
+    #       SendMail.error("Gsuiteのユーザー取得でエラーが発生しました。\n#{exception}")
+    #       exit
+    #     end
+    #   end
+    #   users
+    # end
 
-    def self.check(user)
-      users = Array.new
-      users = self.class.get_users
-      users.include?(user)
-    end
+    # def self.check(user)
+    #   users = Array.new
+    #   users = self.class.get_users
+    #   users.include?(user)
+    # end
 
 end
