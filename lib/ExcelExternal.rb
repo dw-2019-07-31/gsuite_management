@@ -14,10 +14,10 @@ class External < Excel
     @data
   end
 
-  def get_members(english_name)
+  def get_members(mail)
     members = Array.new
     @data.each{|row|
-      next unless row['英語名称'] == english_name['mail']
+      next unless row['英語名称'] == mail
       members << row['グループメンバー']
     }
     members

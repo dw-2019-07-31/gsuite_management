@@ -10,10 +10,12 @@ class Group < Gsuite
     self.directory_auth
     self.groups_settings_auth
     self.get_users
-    self.get_groups
   end
 
-  def get_groups
+  # GSuite上に存在する全てのグループを取得したい場合と特定のグループを取得したい場合が存在する。
+  # 引数を指定しない場合は、全てのグループを取得する。
+  # 引数を指定する場合は、headとdescriptionを指定してグループ取得にフィルターをかけることが可能。
+  def get_groups(**arg)
     @groups = Array.new
     pagetoken = ""
     loop do
@@ -28,9 +30,13 @@ class Group < Gsuite
         Log.error("GSuiteのグループ一覧取得でエラーが発生しました。")
         Log.error("#{exception}")
         SendMail.error("GSuiteのグループ一覧取得でエラーが発生しました。\n#{exception}")
-        exit
+        exit  
       end
     end
+    # Hashに存在しないKeyを指定してnil?するとエラー（nil:NilClass (NoMethodError)）になる。
+    # digメソッドを使うことで、Keyが存在しない場合はnilを返す。
+    @groups.select!{|group| arg[:description] == group['description']} unless arg.dig(:description).nil?
+    @groups.select!{|group| group['name'] =~ /^#{arg[:head]}/} unless arg.dig(:head).nil?
     @groups
   end
 
@@ -39,7 +45,7 @@ class Group < Gsuite
     pagetoken = ""
     loop do
       begin
-        list = @directory_auth.list_members("#{group['mail']}", page_token: "#{pagetoken}")
+        list = @directory_auth.list_members("#{group}", page_token: "#{pagetoken}")
         list.members.each{|member| members << member.email} unless list.members.nil?
         pagetoken = list.next_page_token
         break if pagetoken.nil?
@@ -53,8 +59,10 @@ class Group < Gsuite
     members
   end
 
+  # 組織（例:ICTG）の作成と社内/外部用の作成で若干挙動が異なる。
+  # 社内/外部用を作成する場合は、第一引数にExcelで取得したグループ、第二引数にreferenceを指定すればOK
+  # 組織を作成する場合は、第一引数にExcelで取得したグループ、第二第三引数にreferenceとheadを指定すればOK（第二第三引数は順不同）
   def create_groups(excel_groups, **arg)
-    gsuite_groups = @groups
     excel_groups.each{|excel_group| 
       # グループが既に存在している場合は、next
       next if group_check(excel_group['mail'])
@@ -114,47 +122,41 @@ class Group < Gsuite
     }
   end
 
-  def delete_members(excel_group, excel_members)
-    gsuite_members = self.get_members(excel_group)
+  def delete_members(gsuite_members, excel_members, gsuite_group)
     excel_members == nil ? delete_members = gsuite_members : delete_members = gsuite_members - excel_members
     delete_members.each{|delete_member|
       begin
-        #@directory_auth.delete_member("#{excel_group['mail']}","#{delete_member}")
+        #@directory_auth.delete_member("#{gsuite_group['mail']}","#{delete_member}")
       rescue => exception
-        Log.fatal("グループのメンバー削除でエラーが発生しました。グループ名:#{excel_group['name']}/削除対象メンバー:#{delete_member}")
+        Log.fatal("グループのメンバー削除でエラーが発生しました。グループ名:#{gsuite_group['name']}/削除対象メンバー:#{delete_member}")
         Log.fatal("#{exception}")
-        SendMail.error("グループのメンバー削除で異常が発生しました。\nグループ名:#{excel_group['name']}\n削除対象メンバー:#{delete_member}\n#{exception}")
+        SendMail.error("グループのメンバー削除で異常が発生しました。\nグループ名:#{gsuite_group['name']}\n削除対象メンバー:#{delete_member}\n#{exception}")
         next
       else
-        Log.info("グループのメンバーを削除しました。グループ名：#{excel_group['name']}、削除対象メンバー:#{delete_member}")
+        Log.info("グループのメンバーを削除しました。グループ名：#{gsuite_group['name']}、削除対象メンバー:#{delete_member}")
+        p "グループのメンバーを削除しました。グループ名：#{gsuite_group['name']}、削除対象メンバー:#{delete_member}"
       end
     }
   end
 
-  def delete_groups
-    groups = self.get_groups
-    groups.each{|group|
-      members = Array.new
-      members = self.get_members(group)
-      next unless members.empty?
-      begin
-        #@directory_auth.delete_group("#{group}")
-      rescue => exception
-        Log.error("グループの削除でエラーが発生しました。グループ名:#{group}")
-        Log.error("#{exception}")
-        SendMail.error("グループの削除でエラーが発生しました。\nグループ名:#{group}\n#{exception}")
-        next
-      else
-        Log.info("グループを削除しました。グループ名:#{group}")
-      end
-    }
+  def delete_groups(gsuite_group)
+    begin
+      #@directory_auth.delete_group("#{gsuite_group}")
+    rescue => exception
+      Log.error("グループの削除でエラーが発生しました。グループ名:#{gsuite_group}")
+      Log.error("#{exception}")
+      SendMail.error("グループの削除でエラーが発生しました。\nグループ名:#{gsuite_group}\n#{exception}")
+    else
+      Log.info("グループを削除しました。グループ名:#{gsuite_group}")
+    end
   end
 
   private
 
     def group_check(group_mail)
+      gsuite_groups = self.get_groups if @groups.nil?
       group_mail_list = Array.new
-      @groups.each{|group| group_mail_list << group['mail']}
+      gsuite_groups.each{|group| group_mail_list << group['mail']}
       group_mail_list.include?(group_mail)
     end
 

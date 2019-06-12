@@ -15,7 +15,7 @@ excel_groups = excel.get_group_list
 
 excel_groups.each{|excel_group|
   excel_members = Array.new
-  excel_members = excel.get_members(excel_group)
+  excel_members = excel.get_members(excel_group['mail'])
   next if excel_members.empty?
   gsuite.add_members(excel_group, excel_members)
 }

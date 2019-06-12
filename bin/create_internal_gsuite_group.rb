@@ -14,4 +14,4 @@ excel = Internal.instance
 
 excel_groups = excel.get_group_list
 
-gsuite.create_groups(excel_groups, head:nil, reference:"#{INTERNAL_REFERENSE}")
+gsuite.create_groups(excel_groups, reference:"#{INTERNAL_REFERENSE}")

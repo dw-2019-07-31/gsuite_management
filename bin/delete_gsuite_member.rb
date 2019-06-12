@@ -14,9 +14,8 @@ excel = Organization.instance
 excel_groups = excel.get_group_list
 
 excel_groups.each{|excel_group|
-  
   excel_members = Array.new
   excel_members = excel.get_members(excel_group)
-
+  next unless excel_members.empty?
   gsuite.delete_members(excel_group, excel_members)
 }
