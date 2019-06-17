@@ -1,7 +1,7 @@
 {
-    "all":{"mail":"all@dadway.com","name":"全社共通","description":"Whole Company Common"},
-    "executive":{"mail":"executive@dadway.com","name":"幹部","description":"Executive Conference","header":"幹部メンバー"},
-    "mirai":{"mail":"mirai@dadway.com","name":"みらい会議","description":"Mirai Conference","header":"みらい会議メンバー"},
-    "business_managers":{"mail":"business_managers@dadway.com","name":"事業責任者会議","description":"Business Managers Conference","header":"事業責任者会議メンバー"},
-    "contact":{"mail":"contact@dadway.com","name":"連絡会議","description":"Contact Conference","header":"連絡会議メンバー"}
+    "all":{"address":"all@dadway.com","name":"全社共通","description":"Whole Company Common"},
+    "executive":{"address":"executive@dadway.com","name":"幹部","description":"Executive Conference","header":"幹部メンバー"},
+    "mirai":{"address":"mirai@dadway.com","name":"みらい会議","description":"Mirai Conference","header":"みらい会議メンバー"},
+    "business_managers":{"address":"business_managers@dadway.com","name":"事業責任者会議","description":"Business Managers Conference","header":"事業責任者会議メンバー"},
+    "contact":{"address":"contact@dadway.com","name":"連絡会議","description":"Contact Conference","header":"連絡会議メンバー"}
 }

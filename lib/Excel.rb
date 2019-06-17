@@ -1,5 +1,5 @@
 require 'roo'
-require './lib/Constant.rb'
+require './lib/constant.rb'
 require 'singleton'
 
 class Excel
@@ -8,12 +8,12 @@ class Excel
 
   def initialize(files_name)
 
+    @data = Array.new
     files_name.each{|file_name|
       book = Roo::Spreadsheet.open(file_name)
       @sheet = book.sheet('Sheet1')
 
       header = nil
-      @data = Array.new
       @sheet.each{|row|
         #row[2].gsub!(" ","") unless file_name == "#{EMPLOYEE_FILE_NAME}"
         # ヘッダーが読み込み済みで、データの先頭が # だったら読み飛ばす

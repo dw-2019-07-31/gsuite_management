@@ -1,6 +1,6 @@
 require 'roo'
-require './lib/Constant.rb'
-require './lib/Excel.rb'
+require './lib/constant.rb'
+require './lib/excel.rb'
 
 class External < Excel
 
@@ -14,22 +14,21 @@ class External < Excel
     @data
   end
 
-  def get_members(mail)
+  def get_members(address)
     members = Array.new
     @data.each{|row|
-      next unless row['英語名称'] == mail
+      next unless row['英語名称'] == address
       members << row['グループメンバー']
     }
     members
   end
 
-  def get_group_list
+  def get_groups
     groups = Array.new
     @data.each{|row|
       check = nil
-      # groups.each{|group| (check = 1 ; break) if group['英語名称'] == row['英語名称']}
-      groups.each{|group| (check = 1 ; break) if group['mail'] == row['英語名称']}
-      groups << {'mail' => row['英語名称'], 'name' => row['連絡先グループ名'], 'description' => "#{EXTERNAL_DESCRIPTION}"} if check == nil
+      groups.each{|group| (check = 1 ; break) if group['address'] == row['英語名称']}
+      groups << {'address' => row['英語名称'], 'name' => row['連絡先グループ名'], 'description' => "#{EXTERNAL_DESCRIPTION}"} if check == nil
     }
     groups
   end

@@ -1,6 +1,6 @@
 require 'roo'
-require './lib/Constant.rb'
-require './lib/Excel.rb'
+require './lib/constant.rb'
+require './lib/excel.rb'
 
 class Internal < Excel
 
@@ -16,21 +16,21 @@ class Internal < Excel
     @data
   end
 
-  def get_members(english_name)
+  def get_members(mail)
     members = Array.new
     @data.each{|row|
-      next unless row['英語名称'] == english_name
+      next unless row['英語名称'] == mail
       members << row['グループメンバー']
     }
     members
   end
 
-  def get_group_list
+  def get_groups
     groups = Array.new
     @data.each{|row|
       check = nil
-      groups.each{|group| (check = 1 ; break) if group['mail'] == row['英語名称']}
-      groups << {'mail' => row['英語名称'], 'name' => row['連絡先グループ名'], 'description' => "#{INTERNAL_DESCRIPTION}"} if check == nil
+      groups.each{|group| (check = 1 ; break) if group['address'] == row['英語名称']}
+      groups << {'address' => row['英語名称'], 'name' => row['連絡先グループ名'], 'description' => "#{INTERNAL_DESCRIPTION}"} if check == nil
     }
     groups
   end

@@ -3,16 +3,27 @@ require 'google/apis/groupssettings_v1'
 require 'googleauth'
 require 'googleauth/stores/file_token_store'
 require 'fileutils'
-require './lib/ExcelExternal.rb'
-require './lib/GsuiteGroup.rb'
-require './lib/Log.rb'
-require './lib/Constant.rb'
+require './lib/gsuite_group.rb'
+require './lib/log.rb'
+require './lib/constant.rb'
 
-Log.instance
-gsuite = Group.instance
+# デバックするときはこちら↓
+require './lib/excel_external.rb'
 excel = External.instance
 
-excel_groups = excel.get_group_list
+# rubyコマンドに引数渡して実行するときはこちら↓
+# excel = nil
+# ARGV.each{|arg|
+#   require "./lib/Excel#{arg}.rb"
+#   arg == "External" ? excel = External.instance : excel = Internal.instance
+# }
 
-# gsuite.create_groups(excel_groups, head:nil, reference:"#{EXTERNAL_REFERENSE}")
-gsuite.create_groups(excel_groups, reference:"#{EXTERNAL_REFERENSE}")
+Log.instance
+gsuite_group = Group.instance
+
+excel_groups = excel.get_groups
+
+excel_groups.each{|group|
+    next if gsuite_group.exist?(group['address'])
+    gsuite_group.create_group(group, reference:"#{PUBLIC}")
+}

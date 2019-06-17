@@ -1,21 +1,21 @@
-require './lib/Excel.rb'
-require './lib/Constant.rb'
-require './lib/Log.rb'
-require './lib/Mail.rb'
+require './lib/excel.rb'
+require './lib/constant.rb'
+require './lib/log.rb'
+require './lib/mail.rb'
 
 class Employee < Excel
 
   def initialize
     super(EMPLOYEE_FILE_NAME)
     begin
-      @@employees = Array.new
+      @employees = Array.new
       @data.each{|row|
         next if row['メールアドレス'].nil?
         next unless row['兼務情報'].nil?
         row['メールアドレス'].gsub!(" ", "")
         (row['姓'] = row['名'] ; row['名'] = nil) if row['姓'].nil?
         row['名'] = 'メール' if row['名'].nil?
-        @@employees << row
+        @employees << row
       }
     rescue => exception
       Log.error("ユーザー情報のハッシュデータ作成処理でエラーが発生しました。")
@@ -26,7 +26,7 @@ class Employee < Excel
   end  
 
   def get_users
-    @@employees
+    @employees
   end
 
   # def self.get_orgunit(employee)

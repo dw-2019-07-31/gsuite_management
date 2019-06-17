@@ -1,62 +1,39 @@
 require 'google/apis/admin_directory_v1'
+require 'google/apis/groupssettings_v1'
 require 'googleauth'
 require 'googleauth/stores/file_token_store'
 require 'fileutils'
-require 'google/apis/groupssettings_v1'
-require '/script/lib/Auth.rb'
-require '/script/lib/InternalGroup.rb'
-require '/script/lib/Constant.rb'
-require 'logger'
-require '/script/lib/SendMail.rb'
+require './lib/constant.rb'
+require './lib/gsuite_group.rb'
+require './lib/log.rb'
 
-log = Logger.new('/script/log/script.log')
-log.progname = "delete_internal_member"
+# デバックするときはこちら↓
+require './lib/excel_internal.rb'
+excel = Internal.instance
 
-mail = ErrorMail.new
+# rubyコマンドに引数渡して実行するときはこちら↓
+# excel = nil
+# ARGV.each{|arg|
+#   require "./lib/excel_#{arg}.rb"
+#   arg == "external" ? excel = External.instance : excel = Internal.instance
+#   arg == "external" ? description = EXTERNAL_DESCRIPTION : description = INTERNAL_DESCRIPTION
+# }
 
-#オブジェクト作成
-gsuite = Auth.new
+Log.instance
+gsuite_group = Group.instance
 
-service = Google::Apis::AdminDirectoryV1::DirectoryService.new()
-service.client_options.application_name = APPLICATION_NAME
-service.authorization = gsuite.authorize
+gsuite_groups = gsuite_group.get_groups(description:"#{INTERNAL_DESCRIPTION}")
 
-excel = InternalGroup.new
-
-groups = Array.new
-pagetoken = ""
-loop do
-  list = service.list_groups(customer: 'my_customer', page_token: "#{pagetoken}")
-  list.groups.each{|group| groups << group.email unless group.name =~ /^DW_/ || group.description == 'External Office'}
-  pagetoken = list.next_page_token
-  break if pagetoken.nil?
-end
-
-groups.each{|group|
+gsuite_groups.each{|group|
   excel_members = Array.new
-  gsuite_members = Array.new
 
-  excel_members = excel.get_members("#{group}")
+  gsuite_members = gsuite_group.get_members(group['address'])
+  next if gsuite_members.empty?
 
-  pagetoken = ""
-  loop do
-    list = service.list_members("#{group}", page_token: "#{pagetoken}")
-    list.members.each{|member| gsuite_members << member.email} unless list.members.nil?
-    pagetoken = list.next_page_token
-    break if pagetoken.nil?
-  end
+  excel_members = excel.get_members(group['address'])
 
-  delete_members = gsuite_members - excel_members
-
-  delete_members.each{|member|
-    begin
-      service.delete_member("#{group}", "#{member}")
-      log.info("社内用グループからメンバーを削除しました。#{group}:#{member}")
-    rescue => e
-      log.fatal("社内用グループのメンバー削除で異常が発生しました。#{group}:#{member}")
-      log.fatal("#{e}")
-      mail.send("社内用グループのメンバー削除で異常が発生しました。#{group}:#{member}")
-      next
-    end
+  excel_members == nil ? delete_members = gsuite_members : delete_members = gsuite_members - excel_members
+  delete_members.each{|delete_member|
+    gsuite_group.delete_member(group['address'], delete_member)
   }
 }

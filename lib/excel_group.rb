@@ -1,4 +1,4 @@
-require './lib/Excel.rb'
+require './lib/excel.rb'
 require 'json'
 
 class Organization < Excel
@@ -21,7 +21,7 @@ class Organization < Excel
 
   def get_conferences
     conferences = Array.new
-    @organizations.each_key{|key| conferences << @organizations["#{key}"]['mail'] unless @organizations["#{key}"]['mail'] == 'all@dadway.com'}
+    @organizations.each_key{|key| conferences << @organizations["#{key}"]['address'] unless @organizations["#{key}"]['address'] == 'all@dadway.com'}
     conferences
   end
 
@@ -44,7 +44,7 @@ class Organization < Excel
     members.sort
   end
 
-  def get_group_list
+  def get_groups
     groups = Array.new
     @organizations.each_key{|key| groups << @organizations["#{key}"]}
     get_child_group_list if @child_group.nil?
@@ -61,7 +61,7 @@ class Organization < Excel
     @data.each{|row|
       next if row['メールアドレス'].nil?
       #@child_groups << row['グループ名(英名略称)'] unless row['グループ名(英名略称)'].nil?
-      @child_groups << { 'mail' => "#{row['グループ名(英名略称)'].downcase}#{DOMAIN}", 'name' =>  "#{row['グループ名(英名略称)']}",\
+      @child_groups << { 'address' => "#{row['グループ名(英名略称)'].downcase}#{DOMAIN}", 'name' =>  "#{row['グループ名(英名略称)']}",\
                          'description' => "#{ORGANIZATION_DESCRIPTION}"} unless row['グループ名(英名略称)'].nil?
     }
     @child_groups.uniq!
@@ -73,7 +73,7 @@ class Organization < Excel
     @parent_groups = Array.new
     @data.each{|row|
       next if row['メールアドレス'].nil?
-      @parent_groups << { 'mail' => "#{row['親組織'].downcase}#{DOMAIN}", 'name' =>  "#{row['親組織']}",\
+      @parent_groups << { 'address' => "#{row['親組織'].downcase}#{DOMAIN}", 'name' =>  "#{row['親組織']}",\
                            'description' => "#{ORGANIZATION_DESCRIPTION}"} unless row['親組織'].nil?
     }
     @parent_groups.uniq!
@@ -127,15 +127,13 @@ class Organization < Excel
     members.sort
   end
 
-  def get_members(group)
-    if group['mail'] == @organizations['all']['mail']
+  def get_members(address, name=nil)
+    if address == @organizations['all']['address']
       members = self.get_all
-    # elsif group['mail'] == @organizations['executive']['mail'] || group['mail'] == @organizations['mirai']['mail'] \
-    #       || group['mail'] == @organizations['business_managers']['mail'] || group['mail'] == @organizations['contact']['mail']
-    elsif self.get_conferences().include?(group['mail'])
-      members = self.get_meeting_structure(group['header'])
+    elsif self.get_conferences().include?(address)
+      members = self.get_meeting_structure(remove_DW(name).concat("メンバー"))
     else 
-      members = self.get_members_recurse(group['name'])
+      members = self.get_members_recurse(remove_DW(name))
     end
     members
   end
@@ -159,10 +157,14 @@ class Organization < Excel
   #  }
   #  members.sort
   #end
+
+  def remove_DW(group_name)
+    group_name.sub!(/^DW_/, '') if group_name =~ /^DW_/
+  end
   
-  #def get_meeting_header_name(group)
+  # def get_meeting_header_name(group)
   #  group.sub!(/^DW_/, '')
   #  group.concat("メンバー")
-  #end
+  # end
 
 end

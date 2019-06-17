@@ -3,15 +3,18 @@ require 'google/apis/groupssettings_v1'
 require 'googleauth'
 require 'googleauth/stores/file_token_store'
 require 'fileutils'
-require './lib/ExcelGroup.rb'
-require './lib/GsuiteGroup.rb'
-require './lib/Log.rb'
-require './lib/Constant.rb'
+require './lib/excel_group.rb'
+require './lib/gsuite_group.rb'
+require './lib/log.rb'
+require './lib/constant.rb'
 
 Log.instance
-gsuite = Group.instance
+gsuite_group = Group.instance
 excel = Organization.instance
 
-excel_groups = excel.get_group_list
+excel_groups = excel.get_groups
 
-gsuite.create_groups(excel_groups, head:"#{HEAD}", reference:"#{EXTERNAL_REFERENSE}")
+excel_groups.each{|group|
+    next if gsuite_group.exist?(group['address'])
+    gsuite_group.create_group(group, reference:"#{PUBLIC}", head:"#{HEAD}")
+}

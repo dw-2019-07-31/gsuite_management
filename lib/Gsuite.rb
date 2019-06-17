@@ -4,26 +4,26 @@ require 'googleauth'
 require 'googleauth/stores/file_token_store'
 require 'fileutils'
 require 'singleton'
-require './lib/Constant.rb'
+require './lib/constant.rb'
 
 class Gsuite
 
   include Singleton
 
-  def directory_auth
-    @directory_auth = Google::Apis::AdminDirectoryV1::DirectoryService.new()
-    @directory_auth.client_options.application_name = APPLICATION_NAME
-    @directory_auth.authorization = self.directory_authorize
+  def get_directory_auth
+    @directory = Google::Apis::AdminDirectoryV1::DirectoryService.new()
+    @directory.client_options.application_name = APPLICATION_NAME
+    @directory.authorization = self.certify_directory
   end
 
-  def groups_settings_auth
-    @groups_settings_auth = Google::Apis::GroupssettingsV1::GroupssettingsService.new
-    @groups_settings_auth.client_options.application_name = APPLICATION_NAME
-    @groups_settings_auth.authorization = self.groups_settings_authorize
+  def get_groups_settings_auth
+    @groups_settings = Google::Apis::GroupssettingsV1::GroupssettingsService.new
+    @groups_settings.client_options.application_name = APPLICATION_NAME
+    @groups_settings.authorization = self.certify_groups_settings
   end
 
   #認証
-  def directory_authorize
+  def certify_directory
     FileUtils.mkdir_p(File.dirname(CREDENTIALS_PATH))
     client_id = Google::Auth::ClientId.from_file(CLIENT_SECRETS_PATH)
     token_store = Google::Auth::Stores::FileTokenStore.new(file: CREDENTIALS_PATH)
@@ -45,7 +45,7 @@ class Gsuite
   end
 
   #認証
-  def groups_settings_authorize
+  def certify_groups_settings
     FileUtils.mkdir_p(File.dirname(SETTING_CREDENTIALS_PATH))
     client_id = Google::Auth::ClientId.from_file(CLIENT_SECRETS_PATH)
     token_store = Google::Auth::Stores::FileTokenStore.new(file: SETTING_CREDENTIALS_PATH)
@@ -66,37 +66,59 @@ class Gsuite
     credentials
   end
 
-  # GSuiteのユーザー取得処理はUser/Groupクラスの処理で使用するため、Gsuiteクラスに定義する。
-  # user_checkメソッドも同様の理由によりGsuiteクラスに定義
-  def get_users
-      @gsuite_users = Array.new
-      pagetoken = nil
-      loop do
-        begin
-          list = @directory_auth.list_users(customer: 'my_customer', max_results: 500,  page_token: "#{pagetoken}")
-          list.users.each{|user| 
-            if user.phones.nil?
-              @gsuite_users << { 'mail' => user.primary_email, 'family_name' => user.name.family_name, 'phone'=> ""}
-            else
-              user.phones.each{|phone| @gsuite_users << { 'mail' => user.primary_email, 'family_name' => user.name.family_name, 'phone'=> phone['value'] } }
-            end
-          }
-          pagetoken = list.next_page_token
-          break if pagetoken.nil?
-        rescue => exception
-          Log.error("Gsuiteのユーザー取得でエラーが発生しました。")
-          Log.error("#{exception}")
-          SendMail.error("Gsuiteのユーザー取得でエラーが発生しました。\n#{exception}")
-          exit
-        end
-      end
-      @gsuite_users
-    end
+  # # GSuite上に存在する全てのグループを取得したい場合と特定のグループを取得したい場合が存在する。
+  # # 引数を指定しない場合は、全てのグループを取得する。
+  # # 引数を指定する場合は、headとdescriptionを指定してグループ取得にフィルターをかけることが可能。
+  # def get_groups(**arg)
+  #   @groups = Array.new
+  #   pagetoken = ""
+  #   loop do
+  #     begin
+  #       list = @directory.list_groups(customer: 'my_customer', page_token: "#{pagetoken}")
+  #       list.groups.each{|group| 
+  #         @groups << {'address' => group.email, 'name' => group.name, 'description' => group.description}
+  #       }
+  #       pagetoken = list.next_page_token
+  #       break if pagetoken.nil?
+  #     rescue => exception
+  #       Log.error("GSuiteのグループ一覧取得でエラーが発生しました。")
+  #       Log.error("#{exception}")
+  #       SendMail.error("GSuiteのグループ一覧取得でエラーが発生しました。\n#{exception}")
+  #       exit  
+  #     end
+  #   end
+  #   # Hashに存在しないKeyを指定してnil?するとエラー（nil:NilClass (NoMethodError)）になる。
+  #   # digメソッドを使うことで、Keyが存在しない場合はnilを返す。
+  #   @groups.select!{|group| arg[:description] == group['description']} unless arg.dig(:description).nil?
+  #   @groups.select!{|group| group['name'] =~ /^#{arg[:head]}/} unless arg.dig(:head).nil?
+  #   @groups
+  # end
 
-    def user_check(user)
-      mails = Array.new
-      @gsuite_users.each{|gsuite_user| mails << gsuite_user['mail']}
-      mails.include?(user)
-    end
+  # def get_members(group)
+  #   @members = Array.new
+  #   pagetoken = ""
+  #   loop do
+  #     begin
+  #       list = @directory.list_members("#{group}", page_token: "#{pagetoken}")
+  #       list.members.each{|member| @members << member.email} unless list.members.nil?
+  #       pagetoken = list.next_page_token
+  #       break if pagetoken.nil?
+  #     rescue => exception
+  #       Log.error("GSuiteのメンバー一覧取得でエラーが発生しました。")
+  #       Log.error("#{exception}")
+  #       SendMail.error("GSuiteのメンバー一覧取得でエラーが発生しました。\n#{exception}")
+  #       exit
+  #     end
+  #   end
+  #   @members
+  # end
+
+  # def exist_group?(target)
+  #   group_address_list = Array.new
+  #   groups = Array.new
+  #   @groups == nil ? groups = self.get_groups : groups = @groups
+  #   groups.each{|group| group_address_list << group['address']}
+  #   group_address_list.include?(target)
+  # end
 
 end
