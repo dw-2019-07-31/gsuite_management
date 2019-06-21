@@ -1,17 +1,14 @@
 require './lib/excel.rb'
+require './lib/constant.rb'
 require 'json'
 
 class Organization < Excel
 
   def initialize
-    @organizations = Hash.new
-    File.open("./etc/organization.json") do |file|
-      @organizations = JSON.load(file)
-    end
+    @conferences = read_json("./etc/conference.json")
     super(EMPLOYEE_FILE_NAME)
     groups = Array.new
     @data.each {|row|
-#      next unless row['連絡先除外'].nil?
       next unless row['連絡先グループ除外'].nil?
       next if row['メールアドレス'].nil?
       groups << row
@@ -21,7 +18,7 @@ class Organization < Excel
 
   def get_conferences
     conferences = Array.new
-    @organizations.each_key{|key| conferences << @organizations["#{key}"]['address'] unless @organizations["#{key}"]['address'] == 'all@dadway.com'}
+    @conferences.each_key{|key| conferences << @conferences["#{key}"]['address'] unless @conferences["#{key}"]['address'] == 'all@dadway.com'}
     conferences
   end
 
@@ -46,7 +43,7 @@ class Organization < Excel
 
   def get_groups
     groups = Array.new
-    @organizations.each_key{|key| groups << @organizations["#{key}"]}
+    @conferences.each_key{|key| groups << @conferences["#{key}"]}
     get_child_group_list if @child_group.nil?
     get_parent_group_list if @parent_group.nil?
     groups << @child_groups
@@ -128,7 +125,7 @@ class Organization < Excel
   end
 
   def get_members(address, name=nil)
-    if address == @organizations['all']['address']
+    if address == @conferences['all']['address']
       members = self.get_all
     elsif self.get_conferences().include?(address)
       members = self.get_meeting_structure(remove_DW(name).concat("メンバー"))
@@ -138,33 +135,9 @@ class Organization < Excel
     members
   end
 
-    #def get_executive
-  #  members = Array.new
-  #  @data.each{|row|
-  #    next if row['幹部会議メンバー'].nil?
-  #    next unless row['兼務情報'].nil?
-  #    members << row['メールアドレス']
-  #  }
-  #  members.sort
-  #end
-
-  #def get_determination
-  #  members = Array.new
-  #  @data.each{|row|
-  #    next if row['決定報告会議メンバー'].nil?
-  #    next unless row['兼務情報'].nil?
-  #    members << row['メールアドレス']
-  #  }
-  #  members.sort
-  #end
-
   def remove_DW(group_name)
-    group_name.sub!(/^DW_/, '') if group_name =~ /^DW_/
+    group_name.sub!(/^DW_/, '') unless group_name !~ /^DW_/
+    group_name
   end
   
-  # def get_meeting_header_name(group)
-  #  group.sub!(/^DW_/, '')
-  #  group.concat("メンバー")
-  # end
-
 end

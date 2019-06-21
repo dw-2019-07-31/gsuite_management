@@ -4,7 +4,7 @@ require './lib/constant.rb'
 require './lib/log.rb'
 require './lib/mail.rb'
 
-class Group < Gsuite
+class GsuiteGroup < Gsuite
 
   def initialize
     self.get_directory_auth
@@ -91,7 +91,7 @@ class Group < Gsuite
 
       setting = Google::Apis::GroupssettingsV1::Groups.new(
         who_can_post_message: "#{arg[:reference]}",
-        show_in_group_directory: "#{SHOW_DIRECTORY}"
+        show_in_group_directory: 'true'
       )
       #@groups_settings_auth.patch_group("#{group["mail"]}", setting)
     rescue => exception
@@ -108,7 +108,7 @@ class Group < Gsuite
     begin
       added_member = Google::Apis::AdminDirectoryV1::Member.new(
         email: "#{member}",
-        role: "#{MEMBER_ROLE}"
+        role: 'MEMBER'
       )
       #@directory_auth.insert_member(group,added_member)
     rescue => exception
@@ -146,14 +146,5 @@ class Group < Gsuite
       Log.info("グループを削除しました。グループアドレス:#{group}")
     end
   end
-
-  private
-
-    # def group_check(group_mail)
-    #   gsuite_groups = self.get_groups if @groups.nil?
-    #   group_mail_list = Array.new
-    #   gsuite_groups.each{|group| group_mail_list << group['mail']}
-    #   group_mail_list.include?(group_mail)
-    # end
 
 end

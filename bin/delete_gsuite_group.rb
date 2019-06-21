@@ -7,7 +7,7 @@ require './lib/gsuite_group.rb'
 require './lib/log.rb'
 
 Log.instance
-gsuite_group = Group.instance
+gsuite_group = GsuiteGroup.instance
 
 gsuite_groups = gsuite_group.get_groups
 

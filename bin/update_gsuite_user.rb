@@ -5,11 +5,11 @@ require 'googleauth/stores/file_token_store'
 require 'fileutils'
 require './lib/gsuite_user.rb'
 require './lib/log.rb'
+
 require './lib/excel_employee.rb'
+excel = Employee.new
 
 log = Log.instance
-
-excel = Employee.instance
 gsuite = User.instance
 
 excel_users = excel.get_users

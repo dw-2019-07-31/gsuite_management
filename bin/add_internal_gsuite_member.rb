@@ -8,8 +8,8 @@ require './lib/gsuite_user.rb'
 require './lib/log.rb'
 
 # デバックするときはこちら↓
-require './lib/excel_internal.rb'
-excel = Internal.instance
+require './lib/excel_group.rb'
+excel = ExcelGroup.new('internal')
 
 # rubyコマンドに引数渡して実行するときはこちら↓
 # excel = nil
@@ -19,7 +19,7 @@ excel = Internal.instance
 # }
 
 Log.instance
-gsuite_group = Group.instance
+gsuite_group = GsuiteGroup.instance
 gsuite_user = User.instance
 
 excel_groups = excel.get_groups

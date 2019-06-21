@@ -4,15 +4,16 @@ require 'googleauth'
 require 'googleauth/stores/file_token_store'
 require 'fileutils'
 require './lib/constant.rb'
-require './lib/excel_organization.rb'
 require './lib/gsuite_group.rb'
 require './lib/gsuite_user.rb'
 require './lib/log.rb'
 
+require './lib/excel_organization.rb'
+excel = Organization.new
+
 Log.instance
-gsuite_group = Group.instance
+gsuite_group = GsuiteGroup.instance
 gsuite_user = User.instance
-excel = Organization.instance
 
 gsuite_groups = gsuite_group.get_groups(head:"#{HEAD}")
 

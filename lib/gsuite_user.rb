@@ -49,7 +49,7 @@ class User < Gsuite
             given_name: "#{user['名']}",
             family_name: "#{user['姓']}"
           },
-          password: "#{PASSWORD}",
+          password: 'Dad880188',
           change_password_at_next_login: 'true',
           org_unit_path: "#{orgunit}",
           phones: [

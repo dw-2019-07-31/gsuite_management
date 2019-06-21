@@ -1,13 +1,9 @@
 require 'roo'
 require './lib/constant.rb'
-require 'singleton'
 
 class Excel
 
-  include Singleton
-
   def initialize(files_name)
-
     @data = Array.new
     files_name.each{|file_name|
       book = Roo::Spreadsheet.open(file_name)
@@ -28,6 +24,14 @@ class Excel
         end
       }
     }
+  end
+
+  def read_json(path)
+    @objects = Hash.new
+    File.open(path) do |file|
+      @objects = JSON.load(file)
+    end
+    @objects
   end
 
 end

@@ -8,8 +8,8 @@ require './lib/log.rb'
 require './lib/constant.rb'
 
 # デバックするときはこちら↓
-require './lib/excel_internal.rb'
-excel = Internal.instance
+require './lib/excel_group.rb'
+excel = ExcelGroup.new('internal')
 
 # rubyコマンドに引数渡して実行するときはこちら↓
 # excel = nil
@@ -19,11 +19,11 @@ excel = Internal.instance
 # }
 
 Log.instance
-gsuite_group = Group.instance
+gsuite_group = GsuiteGroup.instance
 
 excel_groups = excel.get_groups
 
 excel_groups.each{|group|
     next if gsuite_group.exist?(group['address'])
-    gsuite_group.create_group(group, reference:"#{PRIVATE}")
+    gsuite_group.create_group(group, reference:'ALL_IN_DOMAIN_CAN_POST')
 }
