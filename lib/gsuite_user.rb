@@ -1,6 +1,6 @@
-require './lib/gsuite.rb'
-require './lib/log.rb'
-require './lib/mail.rb'
+require '/script/lib/gsuite.rb'
+require '/script/lib/log.rb'
+require '/script/lib/mail.rb'
 
 class User < Gsuite
   

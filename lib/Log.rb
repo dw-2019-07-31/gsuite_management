@@ -8,7 +8,7 @@ class Log
 
   #コンストラクタ
   def initialize
-    @@log = Logger.new('./log/script.log', 'weekly')
+    @@log = Logger.new('/script/log/script.log', 'weekly')
   end
 
   #クラスメソッド

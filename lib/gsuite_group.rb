@@ -1,8 +1,8 @@
-require './lib/gsuite.rb'
-require './lib/gsuite_user.rb'
-require './lib/constant.rb'
-require './lib/log.rb'
-require './lib/mail.rb'
+require '/script/lib/gsuite.rb'
+require '/script/lib/gsuite_user.rb'
+require '/script/lib/constant.rb'
+require '/script/lib/log.rb'
+require '/script/lib/mail.rb'
 
 class GsuiteGroup < Gsuite
 

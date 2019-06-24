@@ -1,7 +1,7 @@
-require './lib/excel.rb'
-require './lib/constant.rb'
-require './lib/log.rb'
-require './lib/mail.rb'
+require '/script/lib/excel.rb'
+require '/script/lib/constant.rb'
+require '/script/lib/log.rb'
+require '/script/lib/mail.rb'
 
 class Employee < Excel
 

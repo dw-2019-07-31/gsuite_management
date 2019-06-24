@@ -1,5 +1,5 @@
 require 'roo'
-require './lib/constant.rb'
+require '/script/lib/constant.rb'
 
 class Excel
 

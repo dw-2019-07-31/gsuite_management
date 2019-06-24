@@ -1,11 +1,11 @@
-require './lib/excel.rb'
-require './lib/constant.rb'
+require '/script/lib/excel.rb'
+require '/script/lib/constant.rb'
 require 'json'
 
 class Organization < Excel
 
   def initialize
-    @conferences = read_json("./etc/conference.json")
+    @conferences = read_json("/script/etc/conference.json")
     super(EMPLOYEE_FILE_NAME)
     groups = Array.new
     @data.each {|row|

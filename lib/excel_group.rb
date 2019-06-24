@@ -1,13 +1,13 @@
 require 'roo'
 require 'json'
-require './lib/constant.rb'
-require './lib/excel.rb'
+require '/script/lib/constant.rb'
+require '/script/lib/excel.rb'
 
 class ExcelGroup < Excel
   attr_reader :description
 
   def initialize(division)
-    group = read_json("./etc/group.json")
+    group = read_json("/script/etc/group.json")
     file_name = group["#{division}"]['file']
     @description = group["#{division}"]['description']
 
