@@ -76,7 +76,7 @@ class GsuiteGroup < Gsuite
         name: "#{arg[:head]}#{group['name']}",
         description: "#{group["description"]}"
       )
-      #@directory_auth.insert_group(created_group)
+      @directory.insert_group(created_group)
     rescue => exception
       Log.error("グループの作成でエラーが発生しました。グループ名:#{arg[:head]}#{group['name']}/グループアドレス:#{group['address']}")
       Log.error("#{exception}")
@@ -86,14 +86,14 @@ class GsuiteGroup < Gsuite
       Log.info("グループを作成しました。#{arg[:head]}#{group['name']}:#{group['address']}")
     end
     begin
-      group_setting = @groups_settings_auth.get_group("#{group['address']}")
+      group_setting = @groups_settings.get_group("#{group['address']}")
       return if  group_setting.who_can_post_message == "#{arg[:reference]}" && group_setting.show_in_group_directory == true
 
       setting = Google::Apis::GroupssettingsV1::Groups.new(
         who_can_post_message: "#{arg[:reference]}",
         show_in_group_directory: 'true'
       )
-      #@groups_settings_auth.patch_group("#{group["mail"]}", setting)
+      @groups_settings.patch_group("#{group["mail"]}", setting)
     rescue => exception
       Log.error("グループの設定変更でエラーが発生しました。#{arg[:head]}#{group['name']}:#{group['address']}")
       Log.error("#{exception}")
@@ -110,7 +110,7 @@ class GsuiteGroup < Gsuite
         email: "#{member}",
         role: 'MEMBER'
       )
-      #@directory_auth.insert_member(group,added_member)
+      @directory.insert_member(group,added_member)
     rescue => exception
       Log.error("グループのメンバー追加でエラーが発生しました。グループアドレス:#{group}/追加メンバー:#{member}")
       Log.error("#{exception}")
@@ -123,7 +123,7 @@ class GsuiteGroup < Gsuite
 
   def delete_member(group, member)
     begin
-      #@directory_auth.delete_member("#{group}","#{member}")
+      @directory.delete_member("#{group}","#{member}")
     rescue => exception
       Log.fatal("グループのメンバー削除でエラーが発生しました。グループアドレス:#{group}/削除対象メンバー:#{member}")
       Log.fatal("#{exception}")
@@ -136,7 +136,7 @@ class GsuiteGroup < Gsuite
 
   def delete_group(group)
     begin
-      #@directory_auth.delete_group("#{group}")
+      @directory.delete_group("#{group}")
     rescue => exception
       Log.error("グループの削除でエラーが発生しました。グループアドレス:#{group}")
       Log.error("#{exception}")

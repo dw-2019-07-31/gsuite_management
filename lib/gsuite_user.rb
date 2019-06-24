@@ -59,7 +59,7 @@ class User < Gsuite
             }
           ]
       )
-      #@directory_auth.insert_user(created_user)
+      @directory.insert_user(created_user)
     rescue => exception
       Log.error("ユーザー作成でエラーが発生しました。#{user['姓']}#{user['名']}:#{user['メールアドレス']}")
       Log.error("#{exception}")
@@ -77,7 +77,7 @@ class User < Gsuite
           family_name: "#{user['グループ名(英名略称)']}_#{user['姓']}"
         }
       )
-      #@directory_auth.update_user("#{user['メールアドレス']}",updated_user_name)
+      @directory.update_user("#{user['メールアドレス']}",updated_user_name)
     rescue => exception
       Log.error("ユーザー名の更新でエラーが発生しました。#{user['姓']}#{user['名']}:#{user['メールアドレス']}")
       Log.error("#{exception}")
@@ -96,7 +96,7 @@ class User < Gsuite
           type: 'work'
         }]
       )
-      #@directory_auth.update_user("#{user['メールアドレス']}", updated_user_phone)
+      @directory.update_user("#{user['メールアドレス']}", updated_user_phone)
     rescue => exception
       Log.error("ユーザーの電話番号更新でエラーが発生しました。#{user['姓']}#{user['名']}:#{user['メールアドレス']}")
       Log.error("#{exception}")
