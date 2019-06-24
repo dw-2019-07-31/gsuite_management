@@ -3,12 +3,12 @@ require 'google/apis/groupssettings_v1'
 require 'googleauth'
 require 'googleauth/stores/file_token_store'
 require 'fileutils'
-require './lib/constant.rb'
-require './lib/gsuite_group.rb'
-require './lib/log.rb'
+require '/script/lib/constant.rb'
+require '/script/lib/gsuite_group.rb'
+require '/script/lib/log.rb'
 
 # デバックするときはこちら↓
-require './lib/excel_group.rb'
+require '/script/lib/excel_group.rb'
 excel = ExcelGroup.new('internal')
 
 # rubyコマンドに引数渡して実行するときはこちら↓

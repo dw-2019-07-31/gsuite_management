@@ -3,10 +3,10 @@ require 'google/apis/groupssettings_v1'
 require 'googleauth'
 require 'googleauth/stores/file_token_store'
 require 'fileutils'
-require './lib/gsuite_user.rb'
-require './lib/log.rb'
+require '/script/lib/gsuite_user.rb'
+require '/script/lib/log.rb'
 
-require './lib/excel_employee.rb'
+require '/script/lib/excel_employee.rb'
 excel = Employee.new
 
 log = Log.instance
