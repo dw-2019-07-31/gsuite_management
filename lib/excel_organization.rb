@@ -57,7 +57,6 @@ class Organization < Excel
     @child_groups = Array.new
     @data.each{|row|
       next if row['メールアドレス'].nil?
-      #@child_groups << row['グループ名(英名略称)'] unless row['グループ名(英名略称)'].nil?
       @child_groups << { 'address' => "#{row['グループ名(英名略称)'].downcase}#{DOMAIN}", 'name' =>  "#{row['グループ名(英名略称)']}",\
                          'description' => "#{ORGANIZATION_DESCRIPTION}"} unless row['グループ名(英名略称)'].nil?
     }
