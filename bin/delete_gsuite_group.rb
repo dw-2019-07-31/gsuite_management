@@ -19,5 +19,5 @@ gsuite_groups.each{|group|
   
   members = gsuite_group.get_members(group['address'])
   next unless members.empty?
-  gsuite_group.delete_groups(group['address'])
+  gsuite_group.delete_group(group['address'])
 }
