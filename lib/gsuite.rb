@@ -4,7 +4,8 @@ require 'googleauth'
 require 'googleauth/stores/file_token_store'
 require 'fileutils'
 require 'singleton'
-require '/script/lib/constant.rb'
+# require '/script/lib/constant.rb'
+require_relative '../lib/constant.rb'
 
 class Gsuite
 

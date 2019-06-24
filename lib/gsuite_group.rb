@@ -1,9 +1,14 @@
-require '/script/lib/gsuite.rb'
-require '/script/lib/gsuite_user.rb'
-require '/script/lib/constant.rb'
-require '/script/lib/log.rb'
-require '/script/lib/mail.rb'
+# require '/script/lib/gsuite.rb'
+# require '/script/lib/gsuite_user.rb'
+# require '/script/lib/constant.rb'
+# require '/script/lib/log.rb'
+# require '/script/lib/mail.rb'
 
+require_relative '../lib/gsuite.rb'
+require_relative '../lib/gsuite_user.rb'
+require_relative '../lib/constant.rb'
+require_relative '../lib/log.rb'
+require_relative '../lib/mail.rb'
 class GsuiteGroup < Gsuite
 
   def initialize

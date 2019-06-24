@@ -1,7 +1,9 @@
 require 'roo'
 require 'json'
-require '/script/lib/constant.rb'
-require '/script/lib/excel.rb'
+# require '/script/lib/constant.rb'
+# require '/script/lib/excel.rb'
+require_relative '../lib/constant.rb'
+require_relative '../lib/excel.rb'
 
 class ExcelGroup < Excel
   attr_reader :description

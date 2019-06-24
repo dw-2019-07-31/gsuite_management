@@ -3,8 +3,10 @@ require 'google/apis/groupssettings_v1'
 require 'googleauth'
 require 'googleauth/stores/file_token_store'
 require 'fileutils'
-require '/script/lib/gsuite_group.rb'
-require '/script/lib/log.rb'
+# require '/script/lib/gsuite_group.rb'
+# require '/script/lib/log.rb'
+require_relative '../lib/gsuite_group.rb'
+require_relative '../lib/log.rb'
 
 Log.instance
 gsuite_group = GsuiteGroup.instance

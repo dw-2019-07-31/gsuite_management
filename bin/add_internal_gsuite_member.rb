@@ -3,12 +3,17 @@ require 'google/apis/groupssettings_v1'
 require 'googleauth'
 require 'googleauth/stores/file_token_store'
 require 'fileutils'
-require '/script/lib/gsuite_group.rb'
-require '/script/lib/gsuite_user.rb'
-require '/script/lib/log.rb'
+# require '/script/lib/gsuite_group.rb'
+# require '/script/lib/gsuite_user.rb'
+# require '/script/lib/log.rb'
+
+require_relative '../lib/gsuite_group.rb'
+require_relative '../lib/gsuite_user.rb'
+require_relative '../lib/log.rb'
 
 # デバックするときはこちら↓
-require '/script/lib/excel_group.rb'
+# require '/script/lib/excel_group.rb'
+require_relative '../lib/excel_group.rb'
 excel = ExcelGroup.new('internal')
 
 # rubyコマンドに引数渡して実行するときはこちら↓

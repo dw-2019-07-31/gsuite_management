@@ -1,5 +1,7 @@
-require '/script/lib/excel.rb'
-require '/script/lib/constant.rb'
+# require '/script/lib/excel.rb'
+# require '/script/lib/constant.rb'
+require_relative '../lib/excel.rb'
+require_relative '../lib/constant.rb'
 require 'json'
 
 class Organization < Excel
