@@ -5,7 +5,7 @@ HEAD = 'DW_'
 ORGANIZATION_DESCRIPTION = "Organization"
 #ファイルパス
 # EMPLOYEE_FILE_NAME = ['/home/gsuite/社員情報.xlsx']
-EMPLOYEE_FILE_NAME = ['/script/tmp/社員情報.xlsx']
+EMPLOYEE_FILE_NAME = ['/home/gsuite/社員情報.xlsx']
 #組織部門
 ORGUNIT = '/全許可'
 ORGUNIT_ICTG = '/ICTG'
