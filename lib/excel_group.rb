@@ -26,7 +26,7 @@ class ExcelGroup < Excel
     members = Array.new
     @data.each{|row|
       next unless row['英語名称'] == mail
-      members << row['グループメンバー']
+      members << row['グループメンバー'].downcase
     }
     members
   end
