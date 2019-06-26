@@ -7,7 +7,7 @@ class SendMail
   def self.error(text)
     mail = Mail.new do
        from     'gsuite@dadway.com'
-       to       'system_mgr@dadway.com'
+       to       's_urano@dadway.com'
        subject  "【GSuite】エラー通知"
        body     "#{text}"
     end

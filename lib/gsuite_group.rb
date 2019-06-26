@@ -98,7 +98,7 @@ class GsuiteGroup < Gsuite
         who_can_post_message: "#{arg[:reference]}",
         show_in_group_directory: 'true'
       )
-      @groups_settings.patch_group("#{group["mail"]}", setting)
+      @groups_settings.patch_group("#{group["address"]}", setting)
     rescue => exception
       Log.error("グループの設定変更でエラーが発生しました。#{arg[:head]}#{group['name']}:#{group['address']}")
       Log.error("#{exception}")
