@@ -41,7 +41,7 @@ excel_groups.each{|group|
   gsuite_members = gsuite_group.get_members(group['address'])
   add_members = excel_members - gsuite_members
   add_members.each{|add_member|
-    next unless gsuite_user.exist?(add_member)
+    next unless gsuite_user.exist?(add_member) || gsuite_group.exist?(add_member)
     gsuite_group.add_member(group['address'], add_member)
   }
 }
