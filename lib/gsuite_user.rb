@@ -31,7 +31,7 @@ class User < Gsuite
         Log.error("Gsuiteのユーザー取得でエラーが発生しました。")
         Log.error("#{exception}")
         SendMail.error("Gsuiteのユーザー取得でエラーが発生しました。\n#{exception}")
-        exit
+        exit 1
       end
     end
     @users

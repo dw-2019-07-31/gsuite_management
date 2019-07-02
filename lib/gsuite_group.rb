@@ -50,7 +50,7 @@ class GsuiteGroup < Gsuite
     loop do
       begin
         list = @directory.list_members("#{group}", page_token: "#{pagetoken}")
-        list.members.each{|member| members << member.email} unless list.members.nil?
+        list.members.each{|member| members << member.email.downcase} unless list.members.nil?
         pagetoken = list.next_page_token
         break if pagetoken.nil?
       rescue => exception

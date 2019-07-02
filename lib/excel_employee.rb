@@ -25,7 +25,7 @@ class Employee < Excel
       Log.error("ユーザー情報のハッシュデータ作成処理でエラーが発生しました。")
       Log.error("#{exception}")
       SendMail.error("ユーザー情報のハッシュデータ作成処理でエラーが発生しました。\n#{exception}")
-      exit
+      exit 1
     end
   end  
 
